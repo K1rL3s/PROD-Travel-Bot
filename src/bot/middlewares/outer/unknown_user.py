@@ -6,9 +6,9 @@ from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Chat, Message, Update
 
 from bot.callbacks.profile import ProfileData
-from bot.keyboards.profile import fill_profile_keyboard
+from bot.keyboards.start import fill_profile_keyboard
 from bot.middlewares.base import BaseInfoMiddleware
-from bot.utils.enums import TextCommand
+from bot.utils.enums import SlashCommand
 from core.models import User
 
 
@@ -23,15 +23,18 @@ class UnknownUserMiddleware(BaseInfoMiddleware):
     ) -> Any:
         bot: Bot = data["bot"]
         user: User | None = data.get("user")
+        raw_state: str | None = data.get("raw_state")
 
         if user is not None:
+            return await handler(event, data)
+        if raw_state and "profile" in raw_state:
             return await handler(event, data)
 
         if isinstance(event.event, Message):
             message = cast(Message, event.event)
-            if await Command(TextCommand.START)(message, bot):
+            if await Command(SlashCommand.START)(message, bot):
                 return await handler(event, data)
-            if await Command(TextCommand.HELP)(message, bot):
+            if await Command(SlashCommand.HELP)(message, bot):
                 return await handler(event, data)
 
         if isinstance(event.event, CallbackQuery):

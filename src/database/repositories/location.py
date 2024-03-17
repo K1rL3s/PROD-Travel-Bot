@@ -23,13 +23,6 @@ class LocationAlchemyRepo(LocationRepo, BaseAlchemyRepo):
         model = await self.session.scalar(query)
         return Location.model_validate(model) if model else None
 
-    async def list(self, limit: int, offset: int) -> list[Location]:
-        query = select(LocationModel).limit(limit).offset(offset)
-        return [
-            Location.model_validate(model)
-            for model in await self.session.scalars(query)
-        ]
-
     async def update(self, id: int, instance: Location) -> Location:
         instance.id = id
         model = LocationModel(**instance.model_dump())

@@ -19,7 +19,7 @@ class UserService:
 
     @staticmethod
     def validate_name(name: str) -> bool:
-        return 0 < len(name) < 128
+        return 0 < len(name) <= 128
 
     @staticmethod
     def validate_age(age: str) -> bool:
@@ -27,15 +27,15 @@ class UserService:
 
     @staticmethod
     def validate_country(country: str) -> bool:
-        return 0 < len(country) < 128
+        return 0 < len(country) <= 128
 
     @staticmethod
     def validate_city(city: str) -> bool:
-        return 0 < len(city) < 128
+        return 0 < len(city) <= 128
 
     @staticmethod
     def validate_description(description: str) -> bool:
-        return 0 < len(description) < 256
+        return 0 < len(description) <= 256
 
 
 def get_user_field_validator(field: str) -> Callable[[str], bool]:

@@ -5,6 +5,7 @@ from .outer.callback_answer import CallbackAnswerMiddleware
 from .outer.database import DBSessionMiddleware
 from .outer.service_di import ServiceDIMiddleware
 from .outer.throttling import ThrottlingMiddleware
+from .outer.unknown_user import UnknownUserMiddleware
 from .outer.user_context import UserContextMiddleware
 from .request.retry import RetryRequestMiddleware
 
@@ -27,4 +28,4 @@ def include_global_middlewares(
     dp.update.outer_middleware(ServiceDIMiddleware())
 
     dp.update.outer_middleware(UserContextMiddleware())
-    # dp.update.outer_middleware(UnknownUserMiddleware())
+    dp.update.outer_middleware(UnknownUserMiddleware())  # !!

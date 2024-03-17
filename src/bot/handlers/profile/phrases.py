@@ -1,4 +1,4 @@
-from bot.utils.enums import ProfileFields
+from core.utils.enums import ProfileField
 
 NAME_TOO_LONG = "Имя слишком длинное. Введите его короткую версию."
 AGE_INVALID = "Возраст должен быть настоящим и числом. Введите его ещё раз."
@@ -9,8 +9,8 @@ CITY_TOO_LONG = (
 DESCRIPTION_TOO_LONG = "Слишком много о себе вы пишите. Давайте ещё раз, но короче"
 
 error_text_by_field = {
-    ProfileFields.NAME: NAME_TOO_LONG,
-    ProfileFields.AGE: AGE_INVALID,
-    ProfileFields.CITY: CITY_TOO_LONG,
-    ProfileFields.DESCRIPTION: DESCRIPTION_TOO_LONG,
+    ProfileField.NAME: NAME_TOO_LONG,
+    ProfileField.AGE: AGE_INVALID,
+    ProfileField.CITY: CITY_TOO_LONG,
+    ProfileField.DESCRIPTION: DESCRIPTION_TOO_LONG,
 }

@@ -23,10 +23,6 @@ class RepoMeta(ABC, Generic[M, K]):
         pass
 
     @abstractmethod
-    async def list(self, limit: int, offset: int) -> list[M]:
-        pass
-
-    @abstractmethod
     async def update(self, id: K, instance: M) -> M:
         pass
 
@@ -40,7 +36,17 @@ class NoteRepo(RepoMeta[Note, int], ABC):
 
 
 class TravelRepo(RepoMeta[Travel, int], ABC):
-    pass
+    @abstractmethod
+    async def get_by_title(self, title: str) -> Travel | None:
+        pass
+
+    @abstractmethod
+    async def list_by_tg_id(self, tg_id: int, limit: int, offset: int) -> list[Travel]:
+        pass
+
+    @abstractmethod
+    async def is_has_access(self, tg_id: int, travel_id: int) -> bool:
+        pass
 
 
 class UserRepo(RepoMeta[User, int], ABC):

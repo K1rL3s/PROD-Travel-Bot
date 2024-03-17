@@ -1,19 +1,23 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Awaitable, Callable
 
 from aiogram import Bot, F, html
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.scene import on
 from aiogram.types import CallbackQuery, Message
 
+from bot.callbacks.state import InStateData
 from bot.handlers.base_scene import BaseScene
-from bot.handlers.profile.phrases import error_text_by_field
-from bot.keyboards.profile import check_profile_keyboard
+from bot.keyboards.travels import one_travel_keyboard, travels_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
-from bot.utils.enums import ProfileFields
+from bot.utils.enums import Action
 from bot.utils.tg import delete_last_message
-from core.models import User
-from core.service.user import UserService, get_user_field_validator
+from core.models import Travel
+from core.service.travel import TravelService, get_travel_field_validator
+from core.utils.enums import TravelField
+
+from .funcs import format_travel
+from .phrases import error_text_by_field
 
 
 @dataclass
@@ -22,18 +26,16 @@ class Question:
     key: str
 
 
-profile_fill_steps = [
-    Question(text="Как вас зовут?", key="name"),
-    Question(text="Сколько вам лет?", key="age"),
-    Question(text="В каком городе вы живёте?", key="city"),
+travel_create_steps = [
+    Question(text="Как будет называться это путешествие?", key="title"),
     Question(
-        text="Расскажите о себе. Это будет описанием вашего профиля.",
+        text="Кратко опишите его. Что посетите, чего ожидаете?",
         key="description",
     ),
 ]
 
 
-class ProfileFillScene(BaseScene, state="profile"):
+class TravelCreateScene(BaseScene, state="travel"):
     @on.callback_query.enter()
     async def on_callback_enter(
         self,
@@ -42,7 +44,7 @@ class ProfileFillScene(BaseScene, state="profile"):
         step: int = 0,
     ) -> None:
         try:
-            question = profile_fill_steps[step]
+            question = travel_create_steps[step]
         except IndexError:
             return await self.wizard.exit()
 
@@ -61,7 +63,7 @@ class ProfileFillScene(BaseScene, state="profile"):
         step: int = 0,
     ) -> None:
         try:
-            question = profile_fill_steps[step]
+            question = travel_create_steps[step]
         except IndexError:
             return await self.wizard.exit()
 
@@ -78,13 +80,16 @@ class ProfileFillScene(BaseScene, state="profile"):
         message: Message,
         bot: Bot,
         state: FSMContext,
+        travel_service: TravelService,
     ) -> None:
         data = await state.get_data()
         step: int = data["step"]
         answers: dict[str, Any] = data.get("answers", {})
-        question = profile_fill_steps[step]
+        question = travel_create_steps[step]
 
-        if error := self.step_answer_check(message.text, question.key):
+        if error := await self.step_answer_check(
+            message.text, question.key, travel_service
+        ):
             await message.reply(text=error, reply_markup=back_cancel_keyboard)
             await delete_last_message(bot, state, message)
             return
@@ -100,40 +105,53 @@ class ProfileFillScene(BaseScene, state="profile"):
         message: Message,
         bot: Bot,
         state: FSMContext,
-        user_service: UserService,
+        travel_service: TravelService,
     ) -> None:
         data = await state.get_data()
-        answers = data.get("answers", {})
-        if len(answers) != len(profile_fill_steps):
-            await message.answer(text="Жаль...")
-            return
+        answers = data["answers"]
 
-        user = User(
-            id=message.from_user.id,
-            name=html.quote(answers["name"]),
-            age=int(answers["age"]),
-            city=html.quote(answers["city"]),
+        travel = Travel(
+            owner_id=message.from_user.id,
+            title=html.quote(answers["title"]),
             description=html.quote(answers["description"]),
-            country="timecountry",
         )
-        await user_service.create(user)
+        travel = await travel_service.create(travel)
         await message.answer(
-            text="Профиль успешно создан!",
-            reply_markup=check_profile_keyboard,
+            text=format_travel(travel),
+            reply_markup=one_travel_keyboard(travel, message.from_user.id, page=0),
         )
 
         await delete_last_message(bot, state, message)
         await state.set_data({})
 
-    def step_answer_check(
+    @on.callback_query(InStateData.filter(F.action == Action.CANCEL))
+    async def exit_callback(self, callback: CallbackQuery) -> None:
+        await self.wizard.exit()
+
+    @on.callback_query.exit()
+    async def on_callback_exit(
+        self,
+        callback: CallbackQuery,
+        state: FSMContext,
+        travel_service: TravelService,
+    ) -> None:
+        text = "Ваши путешествия"
+        keyboard = await travels_keyboard(callback.from_user.id, 0, travel_service)
+        await callback.message.edit_text(text=text, reply_markup=keyboard)
+        await state.set_data({})
+
+    async def step_answer_check(
         self,
         answer: str,
         field: str,
+        travel_service: TravelService,
     ) -> str | None:
-        validators = {
-            field: (get_user_field_validator(field), error_text_by_field[field])
-            for field in ProfileFields.values()
+        validators: dict[
+            str, tuple[Callable[[TravelService, str], Awaitable[bool]], str]
+        ] = {
+            field: (get_travel_field_validator(field), error_text_by_field[field])
+            for field in TravelField.values()
         }
-        validator, error_text = validators.get(field)
-        if not validator(answer):
+        validator, error_text = validators[field]
+        if not await validator(travel_service, answer):
             return error_text

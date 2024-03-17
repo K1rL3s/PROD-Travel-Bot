@@ -1,15 +1,4 @@
-from enum import Enum
-
-
-class ValuesEnum(Enum):
-    @classmethod
-    def values(cls) -> list[str]:
-        return [e.value for e in cls]
-
-
-class StrEnum(str, Enum):
-    def __str__(self) -> str:
-        return str(self.value)
+from core.utils.enums import StrEnum
 
 
 class SlashCommand(StrEnum):
@@ -23,7 +12,8 @@ class SlashCommand(StrEnum):
 class TextCommand(StrEnum):
     START = "Старт"
     HELP = "Помощь"
-    PROFILE = "Профиль"
+    PROFILE = "📖Профиль"
+    TRAVELS = "✈️Путешествия"
     CANCEL = "Отмена"
     STOP = CANCEL
 
@@ -47,10 +37,3 @@ class Action(StrEnum):
 
     CONFIRM = "confirm"
     CANCEL = "cancel"
-
-
-class ProfileFields(StrEnum, ValuesEnum):
-    NAME = "name"
-    AGE = "age"
-    CITY = "city"
-    DESCRIPTION = "description"

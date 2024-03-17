@@ -23,12 +23,6 @@ class NoteAlchemyRepo(NoteRepo, BaseAlchemyRepo):
         model = await self.session.scalar(query)
         return Note.model_validate(model) if model else None
 
-    async def list(self, limit: int, offset: int) -> list[Note]:
-        query = select(NoteModel).limit(limit).offset(offset)
-        return [
-            Note.model_validate(model) for model in await self.session.scalars(query)
-        ]
-
     async def update(self, id: int, instance: Note) -> Note:
         instance.id = id
         model = NoteModel(**instance.model_dump())

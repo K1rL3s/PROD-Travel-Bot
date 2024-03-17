@@ -1,10 +1,6 @@
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from core.models.base import BasePydanticModel
-
-if TYPE_CHECKING:
-    from core.models.travel import Travel
 
 
 class Location(BasePydanticModel):
@@ -17,5 +13,3 @@ class Location(BasePydanticModel):
     address: str
     start_at: datetime
     end_at: datetime
-
-    travels: list["Travel"]

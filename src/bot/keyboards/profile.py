@@ -3,28 +3,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.callbacks.menu import OpenMenu
 from bot.callbacks.profile import EditProfileData, ProfileData
-from bot.utils.enums import Action, BotMenu, ProfileFields
+from bot.utils.enums import Action, BotMenu
+from core.utils.enums import ProfileField
 
-check_profile_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="📖Мой профиль",
-                callback_data=ProfileData(action=Action.GET).pack(),
-            )
-        ]
-    ]
-)
-fill_profile_keyboard = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="👋Зарегистрироваться",
-                callback_data=ProfileData(action=Action.ADD).pack(),
-            )
-        ]
-    ]
-)
 edit_profile_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -44,10 +25,10 @@ edit_profile_keyboard = InlineKeyboardMarkup(
 
 builder = InlineKeyboardBuilder()
 for field_name, field_data in (
-    ("1️⃣ Имя", ProfileFields.NAME),
-    ("2️⃣ Возраст", ProfileFields.AGE),
-    ("3️⃣ Город", ProfileFields.CITY),
-    ("4️⃣ Описание", ProfileFields.DESCRIPTION),
+    ("1️⃣ Имя", ProfileField.NAME),
+    ("2️⃣ Возраст", ProfileField.AGE),
+    ("3️⃣ Город", ProfileField.CITY),
+    ("4️⃣ Описание", ProfileField.DESCRIPTION),
 ):
     builder.button(text=field_name, callback_data=EditProfileData(field=field_data))
 builder.button(

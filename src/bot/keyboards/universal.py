@@ -1,7 +1,8 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+from bot.callbacks.menu import OpenMenu
 from bot.callbacks.state import InStateData
-from bot.utils.enums import Action
+from bot.utils.enums import Action, BotMenu
 
 back_button = InlineKeyboardButton(
     text="🔙 Назад",
@@ -10,6 +11,10 @@ back_button = InlineKeyboardButton(
 cancel_button = InlineKeyboardButton(
     text="🚫 Отмена",
     callback_data=InStateData(action=Action.CANCEL).pack(),
+)
+start_button = InlineKeyboardButton(
+    text="Меню",
+    callback_data=OpenMenu(menu=BotMenu.START).pack(),
 )
 
 

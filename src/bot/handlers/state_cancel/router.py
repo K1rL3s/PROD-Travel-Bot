@@ -5,11 +5,11 @@ from aiogram.types import Message
 
 from bot.utils.enums import SlashCommand, TextCommand
 
-router = Router(name=__name__)
+cancel_state_router = Router(name=__name__)
 
 
-@router.message(F.text == TextCommand.CANCEL, StateFilter("*"))
-@router.message(
+@cancel_state_router.message(F.text == TextCommand.CANCEL, StateFilter("*"))
+@cancel_state_router.message(
     Command(SlashCommand.CANCEL, SlashCommand.STOP),
     StateFilter("*"),
 )
@@ -18,6 +18,8 @@ async def cancel_message_text(
     state: "FSMContext",
 ) -> None:
     """Обработчик команд "/cancel", "/stop"."""
+    await message.answer("Ок!")
+
     if await state.get_state() is None:
         return
 

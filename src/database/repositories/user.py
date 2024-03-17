@@ -23,12 +23,6 @@ class UserAlchemyRepo(UserRepo, BaseAlchemyRepo):
         model = await self.session.scalar(query)
         return User.model_validate(model) if model else None
 
-    async def list(self, limit: int, offset: int) -> list[User]:
-        query = select(UserModel).limit(limit).offset(offset)
-        return [
-            User.model_validate(model) for model in await self.session.scalars(query)
-        ]
-
     async def update(self, id: int, instance: User) -> User:
         instance.id = id
         model = UserModel(**instance.model_dump())

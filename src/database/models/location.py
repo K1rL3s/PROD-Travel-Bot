@@ -33,4 +33,5 @@ class LocationModel(AlchemyBaseModel):
         "TravelModel",
         back_populates="locations",
         lazy="selectin",
+        cascade="save-update, merge, delete",
     )

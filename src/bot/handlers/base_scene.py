@@ -17,18 +17,5 @@ class BaseScene(Scene, ABC):
 
         previous_step = step - 1
         if previous_step < 0:
-            return await self.exit(callback)
+            return await self.wizard.exit()
         return await self.wizard.back(step=previous_step)
-
-    @on.callback_query(InStateData.filter(F.action == Action.CANCEL))
-    async def exit(self, callback: CallbackQuery) -> None:
-        await callback.message.edit_text("Окей, отмена")
-        await self.wizard.exit()
-
-    @on.callback_query.exit()
-    async def on_callback_exit(
-        self,
-        callback: CallbackQuery,
-        state: FSMContext,
-    ) -> None:
-        await state.set_data({})
