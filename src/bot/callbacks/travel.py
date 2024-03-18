@@ -12,10 +12,11 @@ class AddTravelData(CallbackData, prefix="add_travel"):
 
 class EditTravelData(CallbackData, prefix="edit_travel"):
     travel_id: int
-    field: str
+    field: str | None = None
     page: int | None = None
 
 
 class DeleteTravelData(CallbackData, prefix="delete_travel"):
     travel_id: int
     page: int | None = None
+    sure: bool = False

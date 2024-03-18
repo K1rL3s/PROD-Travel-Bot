@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from bot.callbacks.travel import EditTravelData, GetTravelData
-from bot.filters.travel_access import TravelCallbackOwner, TravelStateOwner
+from bot.filters.travel import TravelCallbackOwner, TravelStateOwner
 from bot.keyboards.travels import edit_travel_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
 from bot.utils.html import html_quote
@@ -20,7 +20,7 @@ router = Router(name=__name__)
 
 
 @router.callback_query(
-    GetTravelData.filter(),
+    EditTravelData.filter(F.field.is_(None)),
     TravelCallbackOwner(),
 )
 async def edit_travel(

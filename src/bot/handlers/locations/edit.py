@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from bot.callbacks.location import EditLocationData
-from bot.filters.location_access import LocationCallbackOwner, LocationStateOwner
+from bot.filters.location import LocationCallbackOwner, LocationStateOwner
 from bot.keyboards.locations import edit_location_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
 from bot.utils.html import html_quote

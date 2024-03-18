@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.callbacks.location import DeleteLocationData
-from bot.filters.location_access import LocationCallbackOwner
+from bot.filters.location import LocationCallbackOwner
 from bot.keyboards.locations import delete_location_keyboard, locations_keyboard
 from core.models import LocationExtended
 from core.service.location import LocationService

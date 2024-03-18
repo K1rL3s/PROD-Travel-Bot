@@ -3,7 +3,7 @@ from aiogram.filters.callback_data import CallbackData
 from bot.callbacks.paginate import Paginator
 
 
-class LocationPaginator(Paginator, prefix="locations_paginator"):
+class LocationsPaginator(Paginator, prefix="locations_paginator"):
     travel_id: int
 
 

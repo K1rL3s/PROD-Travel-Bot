@@ -6,7 +6,7 @@ from bot.callbacks.location import (
     DeleteLocationData,
     EditLocationData,
     GetLocationData,
-    LocationPaginator,
+    LocationsPaginator,
 )
 from bot.callbacks.travel import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
@@ -65,7 +65,7 @@ async def locations_keyboard(
         rows=rows,
         width=width,
         additional_buttons=additional_buttons,
-        fabric=LocationPaginator,
+        fabric=LocationsPaginator,
         travel_id=travel_id,
     )
 
@@ -99,7 +99,7 @@ def one_location_keyboard(
     builder.row(
         InlineKeyboardButton(
             text="Назад",
-            callback_data=LocationPaginator(
+            callback_data=LocationsPaginator(
                 menu=BotMenu.TRAVELS,
                 page=page,
                 travel_id=location.travel_id,

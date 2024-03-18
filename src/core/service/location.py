@@ -36,9 +36,11 @@ class LocationService:
         location_id: int,
     ) -> LocationExtended | None:
         location = await self.location_repo.get(location_id)
-        if await self.travel_repo.is_has_access(tg_id, location.travel_id):
-            return location
-        return None
+        if location is None:
+            return None
+        if not await self.travel_repo.is_has_access(tg_id, location.travel_id):
+            return None
+        return location
 
     async def delete_with_access_check(self, tg_id: int, location_id: int) -> None:
         if not await self.is_owner(tg_id, location_id):

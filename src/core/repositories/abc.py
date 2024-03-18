@@ -68,7 +68,15 @@ class LocationRepo(RepoMeta[Location, LocationExtended, int], ABC):
 
 
 class NoteRepo(RepoMeta[Note, NoteExtended, int], ABC):
-    pass
+    @abstractmethod
+    async def list(
+        self,
+        tg_id: int,
+        travel_id: int,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[NoteExtended]:
+        pass
 
 
 class UserRepo(RepoMeta[User, User, int], ABC):

@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.callbacks.travel import DeleteTravelData
-from bot.filters.travel_access import TravelCallbackOwner
+from bot.filters.travel import TravelCallbackOwner
 from bot.keyboards.travels import delete_travel_keyboard, travels_keyboard
 from core.models import TravelExtended
 from core.service.travel import TravelService

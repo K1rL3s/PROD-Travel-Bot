@@ -4,25 +4,30 @@ from sqlalchemy import delete, or_, select
 
 from core.models import Travel, TravelExtended
 from core.repositories import TravelRepo
-from database.models import TravelModel, UsersToTravels
+from database.models import LocationModel, NoteModel, TravelModel, UsersToTravels
 from database.repositories.base import BaseAlchemyRepo
 
 
 class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
-    async def create(self, instance: Travel) -> TravelExtended:
+    async def create(self, instance: Travel) -> Travel:
         travel = TravelModel(**instance.model_dump())
         self.session.add(travel)
         await self.session.flush()
 
         relation = UsersToTravels(travel_id=travel.id, member_id=instance.owner_id)
         self.session.add(relation)
-
         await self.session.commit()
-        return TravelExtended.model_validate(travel)
+
+        new_travel = await self.get(travel.id)
+        return TravelExtended.model_validate(new_travel)
 
     async def delete(self, id: int) -> None:
-        relations_query = delete(UsersToTravels).where(UsersToTravels.travel_id == id)
-        await self.session.execute(relations_query)
+        members_query = delete(UsersToTravels).where(UsersToTravels.travel_id == id)
+        locations_query = delete(LocationModel).where(LocationModel.travel_id == id)
+        notes_query = delete(NoteModel).where(NoteModel.travel_id == id)
+        await self.session.execute(members_query)
+        await self.session.execute(locations_query)
+        await self.session.execute(notes_query)
         await self.session.flush()
 
         travel_query = delete(TravelModel).where(TravelModel.id == id)

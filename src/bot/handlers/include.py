@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 from aiogram.fsm.scene import SceneRegistry
 
 from .locations.router import LocationCreateScene, locations_router
+from .notes.router import notes_router
 from .profile.router import ProfileCreateScene, profile_router
 from .start.router import start_router
 from .state_cancel.router import cancel_state_router
@@ -15,6 +16,7 @@ def include_routers(dp: Dispatcher) -> None:
         profile_router,
         travels_router,
         locations_router,
+        notes_router,
     )
 
 

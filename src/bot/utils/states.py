@@ -11,3 +11,9 @@ class TravelState(StatesGroup):
 
 class LocationState(StatesGroup):
     editing = State()
+
+
+class NoteCreating(StatesGroup):
+    title = State()
+    visibility = State()
+    file = State()

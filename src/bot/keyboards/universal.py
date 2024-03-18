@@ -18,6 +18,7 @@ start_button = InlineKeyboardButton(
 )
 
 
+cancel_keyboard = InlineKeyboardMarkup(inline_keyboard=[[cancel_button]])
 back_cancel_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[[back_button, cancel_button]]
 )

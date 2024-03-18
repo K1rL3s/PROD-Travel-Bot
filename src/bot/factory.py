@@ -60,11 +60,13 @@ def create_dispatcher(
     redis: Redis,
 ) -> Dispatcher:
     """Создаёт диспетчер и регистрирует все роуты."""
+    storage = RedisStorage(
+        redis=redis,
+        key_builder=DefaultKeyBuilder(with_destiny=True),
+    )
     dp = Dispatcher(
-        storage=RedisStorage(
-            redis=redis,
-            key_builder=DefaultKeyBuilder(with_destiny=True),
-        ),
+        storage=storage,
+        events_isolation=storage.create_isolation(),
         redis=redis,
         settings=settings,
         name="__main__",

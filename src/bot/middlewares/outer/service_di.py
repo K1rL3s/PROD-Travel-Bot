@@ -29,14 +29,14 @@ class ServiceDIMiddleware(BaseMiddleware):
         session: AsyncSession = data["session"]
 
         user_repo = UserAlchemyRepo(session)
+        travel_repo = TravelAlchemyRepo(session)
         location_repo = LocationAlchemyRepo(session)
         note_repo = NoteAlchemyRepo(session)
-        travel_repo = TravelAlchemyRepo(session)
 
         user_service = UserService(user_repo)
-        location_service = LocationService(location_repo, travel_repo)
-        note_service = NoteService(note_repo)
         travel_service = TravelService(travel_repo)
+        location_service = LocationService(location_repo, travel_repo)
+        note_service = NoteService(note_repo, travel_repo)
 
         data.update(
             {

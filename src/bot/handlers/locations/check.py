@@ -1,9 +1,9 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.location import GetLocationData, LocationPaginator
-from bot.filters.location_access import LocationCallbackAccess
-from bot.filters.travel_access import TravelCallbackAccess
+from bot.callbacks.location import GetLocationData, LocationsPaginator
+from bot.filters.location import LocationCallbackAccess
+from bot.filters.travel import TravelCallbackAccess
 from bot.handlers.locations.funcs import format_location
 from bot.keyboards.locations import locations_keyboard, one_location_keyboard
 from core.models import LocationExtended, TravelExtended
@@ -13,10 +13,10 @@ from core.service.travel import TravelService
 router = Router(name=__name__)
 
 
-@router.callback_query(LocationPaginator.filter(), TravelCallbackAccess())
+@router.callback_query(LocationsPaginator.filter(), TravelCallbackAccess())
 async def paginate_locations(
     callback: CallbackQuery,
-    callback_data: LocationPaginator,
+    callback_data: LocationsPaginator,
     travel: TravelExtended,
     location_service: LocationService,
     travel_service: TravelService,
