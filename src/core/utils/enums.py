@@ -16,9 +16,19 @@ class ProfileField(StrEnum, ValuesEnum):
     NAME = "name"
     AGE = "age"
     CITY = "city"
+    COUNTRY = "country"
     DESCRIPTION = "description"
 
 
 class TravelField(StrEnum, ValuesEnum):
     TITLE = "title"
     DESCRIPTION = "description"
+
+
+class LocationField(StrEnum, ValuesEnum):
+    TITLE = "title"
+    COUNTRY = "country"
+    CITY = "city"
+    ADDRESS = "address"
+    START_AT = "start_at"
+    END_AT = "end_at"

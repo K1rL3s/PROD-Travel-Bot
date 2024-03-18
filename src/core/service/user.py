@@ -1,7 +1,14 @@
-from typing import Callable
+from typing import Awaitable, Callable
 
 from core.models import User
+from core.models.user import (
+    MAX_USER_CITY_LENGTH,
+    MAX_USER_COUNTRY_LENGTH,
+    MAX_USER_DESCRIPTION_LENGTH,
+    MAX_USER_NAME_LENGTH,
+)
 from core.repositories import UserRepo
+from core.utils.enums import ProfileField
 
 
 class UserService:
@@ -18,33 +25,37 @@ class UserService:
         return await self.user_repo.update(tg_id, instance)
 
     @staticmethod
-    def validate_name(name: str) -> bool:
-        return 0 < len(name) <= 128
+    async def validate_name(_, name: str) -> bool:
+        return 0 < len(name) <= MAX_USER_NAME_LENGTH
 
     @staticmethod
-    def validate_age(age: str) -> bool:
+    async def validate_age(_, age: str) -> bool:
         return isinstance(age, str) and age.isdigit() and 0 < int(age) < 125
 
     @staticmethod
-    def validate_country(country: str) -> bool:
-        return 0 < len(country) <= 128
+    async def validate_city(_, city: str) -> bool:
+        return 0 < len(city) <= MAX_USER_CITY_LENGTH
 
     @staticmethod
-    def validate_city(city: str) -> bool:
-        return 0 < len(city) <= 128
+    async def validate_country(_, country: str) -> bool:
+        return 0 < len(country) <= MAX_USER_COUNTRY_LENGTH
 
     @staticmethod
-    def validate_description(description: str) -> bool:
-        return 0 < len(description) <= 256
+    async def validate_description(_, description: str) -> bool:
+        return 0 < len(description) <= MAX_USER_DESCRIPTION_LENGTH
 
 
-def get_user_field_validator(field: str) -> Callable[[str], bool]:
-    if field == "name":
+def get_user_field_validator(
+    field: str,
+) -> Callable[[UserService, str], Awaitable[bool]]:
+    if field == ProfileField.NAME:
         return UserService.validate_name
-    if field == "age":
+    if field == ProfileField.AGE:
         return UserService.validate_age
-    if field == "city":
+    if field == ProfileField.CITY:
         return UserService.validate_city
-    if field == "description":
+    if field == ProfileField.COUNTRY:
+        return UserService.validate_country
+    if field == ProfileField.DESCRIPTION:
         return UserService.validate_description
     raise ValueError("Unknown field")

@@ -1,13 +1,15 @@
+from typing import cast
+
 from sqlalchemy import delete, or_, select
 
-from core.models import Travel
+from core.models import Travel, TravelExtended
 from core.repositories import TravelRepo
 from database.models import TravelModel, UsersToTravels
 from database.repositories.base import BaseAlchemyRepo
 
 
 class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
-    async def create(self, instance: Travel) -> Travel:
+    async def create(self, instance: Travel) -> TravelExtended:
         travel = TravelModel(**instance.model_dump())
         self.session.add(travel)
         await self.session.flush()
@@ -16,7 +18,7 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
         self.session.add(relation)
 
         await self.session.commit()
-        return Travel.model_validate(travel)
+        return TravelExtended.model_validate(travel)
 
     async def delete(self, id: int) -> None:
         relations_query = delete(UsersToTravels).where(UsersToTravels.travel_id == id)
@@ -27,24 +29,33 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
         await self.session.execute(travel_query)
         await self.session.commit()
 
-    async def get(self, id: int) -> Travel | None:
+    async def get(self, id: int) -> TravelExtended | None:
         query = select(TravelModel).where(TravelModel.id == id)
         model = await self.session.scalar(query)
-        return Travel.model_validate(model) if model else None
+        return TravelExtended.model_validate(model) if model else None
 
-    async def get_by_title(self, title: str) -> Travel | None:
+    async def get_by_title(self, title: str) -> TravelExtended | None:
         query = select(TravelModel).where(TravelModel.title == title)
         model = await self.session.scalar(query)
-        return Travel.model_validate(model) if model else None
+        return TravelExtended.model_validate(model) if model else None
 
-    async def update(self, id: int, instance: Travel) -> Travel:
+    async def update(
+        self, id: int, instance: Travel | TravelExtended
+    ) -> TravelExtended:
         instance.id = id
-        model = TravelModel(**instance.model_dump())
+        model = TravelModel(**instance.model_dump(exclude={"owner"}))
         await self.session.merge(model)
         await self.session.commit()
-        return Travel.model_validate(model)
 
-    async def list_by_tg_id(self, tg_id: int, limit: int, offset: int) -> list[Travel]:
+        model = cast(TravelModel, await self.get(id))
+        return TravelExtended.model_validate(model)
+
+    async def list_by_tg_id(
+        self,
+        tg_id: int,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[TravelExtended]:
         query = (
             select(TravelModel)
             .where(
@@ -58,9 +69,13 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
                 )
             )
             .order_by(TravelModel.title)
+            .offset(offset)
         )
+        if limit is not None:
+            query = query.limit(limit)
+
         models = await self.session.scalars(query)
-        return [Travel.model_validate(model) for model in models]
+        return [TravelExtended.model_validate(model) for model in models]
 
     async def is_has_access(self, tg_id: int, travel_id: int) -> bool:
         query = select(UsersToTravels).where(

@@ -7,3 +7,7 @@ class ProfileState(StatesGroup):
 
 class TravelState(StatesGroup):
     editing = State()
+
+
+class LocationState(StatesGroup):
+    editing = State()

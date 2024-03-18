@@ -1,3 +1,5 @@
+from typing import cast
+
 from sqlalchemy import delete, select
 
 from core.models import Note
@@ -25,7 +27,9 @@ class NoteAlchemyRepo(NoteRepo, BaseAlchemyRepo):
 
     async def update(self, id: int, instance: Note) -> Note:
         instance.id = id
-        model = NoteModel(**instance.model_dump())
+        model = NoteModel(**instance.model_dump(exclude={"travel"}))
         await self.session.merge(model)
         await self.session.commit()
-        return Note.model_validate(model)
+
+        new_model = cast(NoteModel, await self.get(id))
+        return Note.model_validate(new_model)

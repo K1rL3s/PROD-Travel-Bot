@@ -65,7 +65,7 @@ async def edit_profile_field_enter(
     validator = get_user_field_validator(edit_field)
     error_text = error_text_by_field[edit_field]
 
-    if not validator(message.text):
+    if not await validator(user_service, message.text):
         await message.reply(text=error_text, reply_markup=back_cancel_keyboard)
         await delete_last_message(bot, state, message)
         return

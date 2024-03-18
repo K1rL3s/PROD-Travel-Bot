@@ -3,12 +3,12 @@ from aiogram.types import CallbackQuery
 
 from bot.callbacks.menu import OpenMenu
 from bot.callbacks.paginate import Paginator
-from bot.callbacks.travel import TravelCRUD
+from bot.callbacks.travel import GetTravelData
 from bot.filters.travel_access import TravelCallbackAccess
 from bot.handlers.travels.funcs import format_travel
 from bot.keyboards.travels import one_travel_keyboard, travels_keyboard
-from bot.utils.enums import Action, BotMenu
-from core.models import Travel
+from bot.utils.enums import BotMenu
+from core.models import TravelExtended
 from core.service.travel import TravelService
 
 router = Router(name=__name__)
@@ -40,13 +40,13 @@ async def paginate_travels(
 
 
 @router.callback_query(
-    TravelCRUD.filter(F.action == Action.GET),
+    GetTravelData.filter(),
     TravelCallbackAccess(),
 )
 async def one_travel(
     callback: CallbackQuery,
-    callback_data: TravelCRUD,
-    travel: Travel,
+    callback_data: GetTravelData,
+    travel: TravelExtended,
 ) -> None:
     text = format_travel(travel)
     keyboard = one_travel_keyboard(

@@ -34,7 +34,7 @@ class ServiceDIMiddleware(BaseMiddleware):
         travel_repo = TravelAlchemyRepo(session)
 
         user_service = UserService(user_repo)
-        location_service = LocationService(location_repo)
+        location_service = LocationService(location_repo, travel_repo)
         note_service = NoteService(note_repo)
         travel_service = TravelService(travel_repo)
 

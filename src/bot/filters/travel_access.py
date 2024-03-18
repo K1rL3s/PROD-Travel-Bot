@@ -8,7 +8,9 @@ from core.service.travel import TravelService
 
 
 def _check_callback_data(callback_data: Any) -> bool:
-    return hasattr(callback_data, "id") and isinstance(callback_data.id, int)
+    return hasattr(callback_data, "travel_id") and isinstance(
+        callback_data.travel_id, int
+    )
 
 
 class TravelCallbackAccess(BaseFilter):
@@ -23,7 +25,7 @@ class TravelCallbackAccess(BaseFilter):
 
         travel = await travel_service.get_with_access_check(
             callback.from_user.id,
-            callback_data.id,
+            callback_data.travel_id,
         )
         if travel:
             return {"travel": travel}
@@ -40,9 +42,15 @@ class TravelCallbackOwner(BaseFilter):
         if not _check_callback_data(callback_data):
             return False
 
-        travel = await travel_service.is_owner(
+        if not await travel_service.is_owner(
             callback.from_user.id,
-            callback_data.id,
+            callback_data.travel_id,
+        ):
+            return False
+
+        travel = await travel_service.get_with_access_check(
+            callback.from_user.id,
+            callback_data.travel_id,
         )
         if travel:
             return {"travel": travel}

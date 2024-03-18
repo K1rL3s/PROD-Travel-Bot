@@ -22,6 +22,7 @@ class BotMenu(StrEnum):
     START = "start"
     PROFILE = "profile"
     TRAVELS = "travels"
+    LOCATIONS = "locations"
 
 
 class Action(StrEnum):

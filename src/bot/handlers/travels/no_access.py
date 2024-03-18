@@ -3,7 +3,7 @@ from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.travel import EditTravelData, TravelCRUD
+from bot.callbacks.travel import DeleteTravelData, EditTravelData, GetTravelData
 from bot.filters.travel_access import TravelCallbackAccess, TravelStateAccess
 from bot.keyboards.travels import back_to_travels_keyboard
 from bot.utils.states import TravelState
@@ -13,19 +13,19 @@ router = Router(name=__name__)
 
 
 @router.callback_query(
-    or_f(TravelCRUD.filter(), EditTravelData.filter()),
+    or_f(GetTravelData.filter(), DeleteTravelData.filter(), EditTravelData.filter()),
     ~TravelCallbackAccess(),
 )
 async def no_travel_access(
     callback: CallbackQuery,
-    callback_data: TravelCRUD | EditTravelData,
+    callback_data: GetTravelData | DeleteTravelData | EditTravelData,
 ) -> None:
     text = "Путешествие не найдено или у вас нет к нему доступа :("
     keyboard = back_to_travels_keyboard(callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
 
-@router.message(TravelState.editing, TravelStateAccess())
+@router.message(TravelState.editing, ~TravelStateAccess())
 async def edit_travel_no_access(
     message: Message,
     bot: Bot,
