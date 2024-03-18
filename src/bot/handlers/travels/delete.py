@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.callbacks.travel import DeleteTravelData, TravelCRUD
-from bot.filters.travel_access import TravelCallbackAccess
+from bot.filters.travel_access import TravelCallbackOwner
 from bot.keyboards.travels import delete_travel_keyboard, travels_keyboard
 from bot.utils.enums import Action
 from core.models import Travel
@@ -14,7 +14,7 @@ router = Router(name=__name__)
 
 @router.callback_query(
     TravelCRUD.filter(F.action == Action.DELETE),
-    TravelCallbackAccess(),
+    TravelCallbackOwner(),
 )
 async def delete_travel(
     callback: CallbackQuery,
@@ -28,7 +28,7 @@ async def delete_travel(
 
 @router.callback_query(
     DeleteTravelData.filter(),
-    TravelCallbackAccess(),
+    TravelCallbackOwner(),
 )
 async def delete_travel_sure(
     callback: CallbackQuery,

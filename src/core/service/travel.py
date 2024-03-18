@@ -50,6 +50,10 @@ class TravelService:
 
         return await self.travel_repo.delete(travel_id)
 
+    async def is_owner(self, tg_id: int, travel_id: int) -> bool:
+        travel = await self.get_with_access_check(tg_id, travel_id)
+        return travel is not None and travel.owner_id == tg_id
+
 
 # Да, оно будет браковать изменение названия своего путешествия на такое же
 async def _validate_title(travel_service: TravelService, title: str) -> bool:

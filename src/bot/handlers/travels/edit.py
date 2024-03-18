@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from bot.callbacks.travel import EditTravelData, TravelCRUD
-from bot.filters.travel_access import TravelCallbackAccess, TravelStateAccess
+from bot.filters.travel_access import TravelCallbackOwner
 from bot.keyboards.travels import edit_travel_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
 from bot.utils.enums import Action
@@ -20,7 +20,7 @@ router = Router(name=__name__)
 
 
 @router.callback_query(
-    TravelCRUD.filter(F.action == Action.EDIT), TravelCallbackAccess()
+    TravelCRUD.filter(F.action == Action.EDIT), TravelCallbackOwner()
 )
 async def edit_travel(
     callback: CallbackQuery,
@@ -35,7 +35,8 @@ async def edit_travel(
 for field in TravelField.values():
 
     @router.callback_query(
-        EditTravelData.filter(F.field == field), TravelCallbackAccess()
+        EditTravelData.filter(F.field == field),
+        TravelCallbackOwner(),
     )
     async def edit_travel_field(
         callback: CallbackQuery,
@@ -58,7 +59,7 @@ for field in TravelField.values():
         await state.set_state(TravelState.editing)
 
 
-@router.message(F.text, TravelState.editing, TravelStateAccess())
+@router.message(F.text, TravelState.editing, TravelCallbackOwner())
 async def edit_travel_field_enter(
     message: Message,
     bot: Bot,
