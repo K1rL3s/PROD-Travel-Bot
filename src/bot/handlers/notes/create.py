@@ -3,15 +3,17 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.notes import AddNoteData, NoteVisibilityData
+from bot.callbacks.notes import AddNoteData, NoteStatusData
 from bot.callbacks.state import InStateData
-from bot.filters.travel import TravelCallbackAccess
-from bot.keyboards.notes import choose_visibility_keyboard
+from bot.filters.note import NoteDocumentFilter
+from bot.filters.travel import TravelCallbackAccess, TravelStateAccess
+from bot.handlers.notes.phrases import TITLE_ERROR
+from bot.keyboards.notes import choose_status_keyboard, notes_keyboard
 from bot.keyboards.universal import cancel_keyboard
 from bot.utils.enums import Action
 from bot.utils.states import NoteCreating
 from bot.utils.tg import delete_last_message
-from core.models import Note
+from core.models import Note, TravelExtended
 from core.service.notes import NoteService
 
 router = Router(name=__name__)
@@ -36,42 +38,47 @@ async def create_note_title(
     message: Message,
     bot: Bot,
     state: FSMContext,
+    note_service: NoteService,
 ) -> None:
+    if (title := await NoteService.validate_title(note_service, message.text)) is None:
+        await message.reply(text=TITLE_ERROR, reply_markup=cancel_keyboard)
+        await delete_last_message(bot, state, message)
+        return
+
     text = (
         "Сделать заметку публичной (для всех в путешествии) "
         "или приватной (только для вас)?"
     )
-    bot_msg = await message.answer(text=text, reply_markup=choose_visibility_keyboard)
+    bot_msg = await message.answer(text=text, reply_markup=choose_status_keyboard)
 
     await delete_last_message(bot, state, message)
-    await state.update_data(title=message.text, last_id=bot_msg.message_id)
-    await state.set_state(NoteCreating.visibility)
+    await state.update_data(title=title, last_id=bot_msg.message_id)
+    await state.set_state(NoteCreating.status)
 
 
-@router.callback_query(NoteVisibilityData.filter(), NoteCreating.visibility)
-async def create_note_visibility(
+@router.callback_query(NoteStatusData.filter(), NoteCreating.status)
+async def create_note_status(
     callback: CallbackQuery,
-    callback_data: NoteVisibilityData,
+    callback_data: NoteStatusData,
     state: FSMContext,
 ) -> None:
-    text = "Отправьте мне файл, изображение или текст. Я сохраню это как заметку."
+    text = (
+        "Отправьте мне текст, голосовоое соообщение, кружочек, фотографию, "
+        "видео или документ. Я сохраню это как заметку."
+    )
     await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
 
     await state.set_state(NoteCreating.file)
     await state.update_data(is_public=callback_data.is_public)
 
 
-@router.message(NoteCreating.file, F.text, F.text.as_("text"))
-@router.message(NoteCreating.file, F.photo.F.photo[-1].file_id.as_("photo_id"))
-@router.message(NoteCreating.file, F.document, F.documnt.file_id.as_("document_id"))
+@router.message(NoteCreating.file, NoteDocumentFilter())
 async def create_note_file(
     message: Message,
     state: FSMContext,
     bot: Bot,
     note_service: NoteService,
-    text: str | None = None,
-    photo_id: str | None = None,
-    document_id: str | None = None,
+    document_id: str,
 ) -> None:
     data = await state.get_data()
     travel_id: int = data["travel_id"]
@@ -88,16 +95,52 @@ async def create_note_file(
     await note_service.create_with_access_check(message.from_user.id, note)
 
     text = "Успешно сохранил"
-    await message.answer(text=text, reply_markup=None)
+    keyboard = await notes_keyboard(
+        message.from_user.id,
+        0,
+        travel_id,
+        note_service,
+    )
+    await message.answer(text=text, reply_markup=keyboard)
 
+    await delete_last_message(bot, state, message)
     await state.clear()
+
+
+@router.message(NoteCreating.file)
+async def create_note_file_unknown(
+    message: Message,
+    state: FSMContext,
+    bot: Bot,
+) -> None:
+    text = (
+        "Такие файлы я ещё не умею сохранять. :(\n"
+        "Вы можете загрузить текст, голосовоое соообщение, кружочек, фотографию, "
+        "видео или документ"
+    )
+    await message.reply(text=text, reply_markup=None)
+
     await delete_last_message(bot, state, message)
 
 
 @router.callback_query(
     InStateData.filter(F.action == Action.CANCEL),
     StateFilter(NoteCreating),
+    TravelStateAccess(),
 )
-async def cancel_create_note(callback: CallbackQuery, state: FSMContext) -> None:
-    await callback.message.edit_text(text="ok")
+async def cancel_create_note(
+    callback: CallbackQuery,
+    state: FSMContext,
+    travel: TravelExtended,
+    note_service: NoteService,
+) -> None:
+    text = f'Заметки путешествия "{travel.title}"'
+    keyboard = await notes_keyboard(
+        callback.from_user.id,
+        0,
+        travel.id,
+        note_service,
+    )
+    await callback.message.edit_text(text=text, reply_markup=keyboard)
+
     await state.clear()

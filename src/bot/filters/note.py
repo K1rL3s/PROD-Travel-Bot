@@ -1,4 +1,9 @@
 from typing import Any
+from uuid import uuid4
+
+from aiogram import Bot
+from aiogram.filters import BaseFilter
+from aiogram.types import BufferedInputFile, Message
 
 from bot.filters.access import CallbackAccess, StateAccess
 from core.models import NoteExtended
@@ -48,3 +53,43 @@ class NoteStateOwner(StateAccess[NoteExtended, int]):
             state_key="note_id",
             owner_mode=False,
         )
+
+
+class NoteDocumentFilter(BaseFilter):
+    async def __call__(self, message: Message, bot: Bot) -> bool | dict[str, Any]:
+        if message.document:
+            return {"document_id": message.document.file_id}
+
+        if message.photo:
+            photo = await bot.download(message.photo[-1].file_id)
+            document = BufferedInputFile(
+                file=photo.read(),
+                filename=str(uuid4()) + ".jpg",
+            )
+            bot_msg = await bot.send_document(
+                chat_id=message.chat.id,
+                document=document,
+            )
+            return {"document_id": bot_msg.document.file_id}
+
+        if message.voice:
+            return {"document_id": message.voice.file_id}
+
+        if message.video_note:
+            return {"document_id": message.video_note.file_id}
+
+        if message.video:
+            return {"document_id": message.video.file_id}
+
+        if message.text:
+            document = BufferedInputFile(
+                file=message.text.encode("utf-8"),
+                filename=str(uuid4()) + ".txt",
+            )
+            bot_msg = await bot.send_document(
+                chat_id=message.chat.id,
+                document=document,
+            )
+            return {"document_id": bot_msg.document.file_id}
+
+        return False

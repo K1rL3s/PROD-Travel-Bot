@@ -19,7 +19,7 @@ fill_profile_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="👋Зарегистрироваться",
+                text="👋 Создать профиль",
                 callback_data=ProfileData(action=Action.ADD).pack(),
             )
         ]

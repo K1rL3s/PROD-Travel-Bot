@@ -6,24 +6,30 @@ from bot.callbacks.notes import (
     DeleteNoteData,
     GetNoteData,
     NotesPaginator,
-    NoteVisibilityData,
+    NoteStatusData,
+    SwitchNoteData,
 )
+from bot.callbacks.travel import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import cancel_button
+from bot.keyboards.universal import ADD, BACK, DELETE, TRAVEL, cancel_button
 from bot.utils.enums import BotMenu
 from core.models import Note, Travel
 from core.service.notes import NoteService
 
-choose_visibility_keyboard = InlineKeyboardMarkup(
+PUBLIC = "👨‍👩‍👦"
+PRIVATE = "🤫"
+
+
+choose_status_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="Публичная",
-                callback_data=NoteVisibilityData(is_public=True).pack(),
+                text=f"{PUBLIC} Публичная",
+                callback_data=NoteStatusData(is_public=True).pack(),
             ),
             InlineKeyboardButton(
-                text="Приватная",
-                callback_data=NoteVisibilityData(is_public=False).pack(),
+                text=f"{PRIVATE} Приватная",
+                callback_data=NoteStatusData(is_public=False).pack(),
             ),
         ],
         [cancel_button],
@@ -40,7 +46,7 @@ async def notes_keyboard(
     rows, width = 6, 1
     subjects = [
         InlineKeyboardButton(
-            text=note.title,
+            text=f"{(PUBLIC if note.is_public else PRIVATE)} {note.title}",
             callback_data=GetNoteData(
                 note_id=note.id,
                 travel_id=travel_id,
@@ -51,8 +57,12 @@ async def notes_keyboard(
     ]
 
     create_note_button = InlineKeyboardButton(
-        text="Добавить заметку",
+        text=f"{ADD} Добавить заметку",
         callback_data=AddNoteData(page=page, travel_id=travel_id).pack(),
+    )
+    open_travel_button = InlineKeyboardButton(
+        text=f"{TRAVEL} Путешествие",
+        callback_data=GetTravelData(travel_id=travel_id).pack(),
     )
 
     return paginate_keyboard(
@@ -61,7 +71,9 @@ async def notes_keyboard(
         page=page,
         rows=rows,
         width=width,
-        additional_buttons=[create_note_button],
+        additional_buttons=[create_note_button, open_travel_button],
+        fabric=NotesPaginator,
+        travel_id=travel_id,
     )
 
 
@@ -76,15 +88,17 @@ def one_note_keyboard(
     if tg_id == note.creator_id or tg_id == travel.owner_id:
         builder.row(
             InlineKeyboardButton(
-                text="Удалить",
+                text=f"{DELETE} Удалить",
                 callback_data=DeleteNoteData(
                     note_id=note.id,
                     page=page,
                 ).pack(),
             ),
             InlineKeyboardButton(
-                text="Удалить",
-                callback_data=DeleteNoteData(
+                text=(
+                    f"{PUBLIC} Публичная" if note.is_public else f"{PRIVATE} Приватная"
+                ),
+                callback_data=SwitchNoteData(
                     note_id=note.id,
                     page=page,
                 ).pack(),
@@ -93,7 +107,7 @@ def one_note_keyboard(
 
     builder.row(
         InlineKeyboardButton(
-            text="Назад",
+            text=f"{BACK} Назад",
             callback_data=NotesPaginator(
                 menu=BotMenu.NOTES,
                 page=page,

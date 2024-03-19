@@ -28,5 +28,5 @@ class DeleteNoteData(CallbackData, prefix="delete_note"):
     page: int
 
 
-class NoteVisibilityData(CallbackData, prefix="note_visibility"):
+class NoteStatusData(CallbackData, prefix="note_status"):
     is_public: bool

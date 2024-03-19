@@ -10,6 +10,7 @@ from bot.callbacks.location import (
 )
 from bot.callbacks.travel import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
+from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, TRAVEL
 from bot.utils.enums import BotMenu
 from core.models import LocationExtended
 from core.service.location import LocationService
@@ -43,7 +44,7 @@ async def locations_keyboard(
     if await travel_service.is_owner(tg_id, travel_id):
         additional_buttons.append(
             InlineKeyboardButton(
-                text="Добавить",
+                text=f"{ADD} Добавить",
                 callback_data=AddLocationData(
                     travel_id=travel_id,
                     page=page,
@@ -53,7 +54,7 @@ async def locations_keyboard(
 
     additional_buttons.append(
         InlineKeyboardButton(
-            text="Путешествие",
+            text=f"{TRAVEL} Путешествие",
             callback_data=GetTravelData(travel_id=travel_id, page=page).pack(),
         )
     )
@@ -80,14 +81,14 @@ def one_location_keyboard(
     if location.travel.owner_id == tg_id:
         builder.row(
             InlineKeyboardButton(
-                text="Редактировать",
+                text=f"{EDIT} Редактировать",
                 callback_data=EditLocationData(
                     location_id=location.id,
                     page=page,
                 ).pack(),
             ),
             InlineKeyboardButton(
-                text="Удалить",
+                text=f"{DELETE} Удалить",
                 callback_data=DeleteLocationData(
                     location_id=location.id,
                     page=page,
@@ -98,7 +99,7 @@ def one_location_keyboard(
 
     builder.row(
         InlineKeyboardButton(
-            text="Назад",
+            text=f"{BACK} Назад",
             callback_data=LocationsPaginator(
                 menu=BotMenu.TRAVELS,
                 page=page,
@@ -129,7 +130,7 @@ def edit_location_keyboard(location_id: int, page: int):
             ),
         )
     builder.button(
-        text="🔙 Назад",
+        text=f"{BACK} Назад",
         callback_data=GetLocationData(location_id=location_id, page=page),
     )
     return builder.adjust(1, repeat=True).as_markup()
@@ -140,7 +141,7 @@ def delete_location_keyboard(location_id: int, page: int) -> InlineKeyboardMarku
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="Удалить",
+                    text=f"{DELETE} Удалить",
                     callback_data=DeleteLocationData(
                         location_id=location_id,
                         page=page,
@@ -150,7 +151,7 @@ def delete_location_keyboard(location_id: int, page: int) -> InlineKeyboardMarku
             ],
             [
                 InlineKeyboardButton(
-                    text="Назад",
+                    text=f"{BACK} Назад",
                     callback_data=GetLocationData(
                         location_id=location_id,
                         page=page,

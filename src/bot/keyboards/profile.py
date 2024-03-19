@@ -3,6 +3,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.callbacks.menu import OpenMenu
 from bot.callbacks.profile import EditProfileData, ProfileData
+from bot.keyboards.universal import BACK, EDIT
 from bot.utils.enums import Action, BotMenu
 from core.utils.enums import ProfileField
 
@@ -10,13 +11,13 @@ edit_profile_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="✏️Изменить профиль",
+                text=f"{EDIT} Изменить профиль",
                 callback_data=ProfileData(action=Action.EDIT).pack(),
             )
         ],
         [
             InlineKeyboardButton(
-                text="🔙 Назад",
+                text=f"{BACK} Назад",
                 callback_data=OpenMenu(menu=BotMenu.START).pack(),
             )
         ],
@@ -32,7 +33,7 @@ for field_name, field_data in (
 ):
     builder.button(text=field_name, callback_data=EditProfileData(field=field_data))
 builder.button(
-    text="🔙 Назад",
+    text=f"{BACK} Назад",
     callback_data=OpenMenu(menu=BotMenu.PROFILE),
 )
 edit_profile_fields_keyboard = builder.adjust(1, repeat=True).as_markup()

@@ -32,3 +32,7 @@ class LocationField(StrEnum, ValuesEnum):
     ADDRESS = "address"
     START_AT = "start_at"
     END_AT = "end_at"
+
+
+class NoteField(StrEnum, ValuesEnum):
+    TITLE = "title"

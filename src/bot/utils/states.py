@@ -15,5 +15,5 @@ class LocationState(StatesGroup):
 
 class NoteCreating(StatesGroup):
     title = State()
-    visibility = State()
+    status = State()
     file = State()
