@@ -1,3 +1,4 @@
+from .invite_link import InviteLink, InviteLinkExtended
 from .location import Location, LocationExtended
 from .note import Note, NoteExtended
 from .travel import Travel, TravelExtended
@@ -11,4 +12,6 @@ __all__ = (
     "Travel",
     "TravelExtended",
     "User",
+    "InviteLink",
+    "InviteLinkExtended",
 )

@@ -9,12 +9,12 @@ from bot.callbacks.notes import (
     NoteStatusData,
     SwitchNoteData,
 )
-from bot.callbacks.travel import GetTravelData
+from bot.callbacks.travels import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
 from bot.keyboards.universal import ADD, BACK, DELETE, TRAVEL, cancel_button
 from bot.utils.enums import BotMenu
 from core.models import Note, Travel
-from core.service.notes import NoteService
+from core.service.note import NoteService
 
 PUBLIC = "👨‍👩‍👦"
 PRIVATE = "🤫"
@@ -94,25 +94,20 @@ def one_note_keyboard(
                     page=page,
                 ).pack(),
             ),
-            InlineKeyboardButton(
-                text=(
-                    f"{PUBLIC} Публичная" if note.is_public else f"{PRIVATE} Приватная"
-                ),
-                callback_data=SwitchNoteData(
-                    note_id=note.id,
-                    page=page,
-                ).pack(),
+        )
+    if tg_id == note.creator_id:
+        builder.button(
+            text=(f"{PUBLIC} Публичная" if note.is_public else f"{PRIVATE} Приватная"),
+            callback_data=SwitchNoteData(
+                note_id=note.id,
+                page=page,
             ),
         )
 
     builder.row(
         InlineKeyboardButton(
             text=f"{BACK} Назад",
-            callback_data=NotesPaginator(
-                menu=BotMenu.NOTES,
-                page=page,
-                travel_id=travel.id,
-            ).pack(),
+            callback_data=NotesPaginator(page=page, travel_id=travel.id).pack(),
         )
     )
 

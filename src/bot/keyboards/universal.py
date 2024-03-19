@@ -15,6 +15,7 @@ TRAVEL = "✈️"
 LOCATION = "🗽"
 NOTE = "📝"
 START = "🏠"
+MEMBER = "👫"
 
 
 back_button = InlineKeyboardButton(

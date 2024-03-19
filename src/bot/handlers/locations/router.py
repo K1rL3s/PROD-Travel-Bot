@@ -1,7 +1,7 @@
 from aiogram import Router
 
-from bot.callbacks.location import AddLocationData
-from bot.filters.travel import TravelCallbackAccess
+from bot.callbacks.locations import AddLocationData
+from bot.filters.travels import TravelCallbackAccess
 
 from .check import router as check_router
 from .create import LocationCreateScene

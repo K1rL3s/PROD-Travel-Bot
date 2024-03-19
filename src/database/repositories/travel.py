@@ -88,3 +88,10 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
             UsersToTravels.member_id == tg_id,
         )
         return bool(await self.session.scalar(query))
+
+    async def is_owner(self, tg_id: int, travel_id: int) -> bool:
+        query = select(TravelModel).where(
+            TravelModel.id == travel_id,
+            TravelModel.owner_id == tg_id,
+        )
+        return bool(await self.session.scalar(query))

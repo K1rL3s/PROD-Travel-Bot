@@ -6,7 +6,7 @@ from core.models.travel import (
     MAX_TRAVEL_TITLE_LENGTH,
     TravelExtended,
 )
-from core.repositories.abc import TravelRepo
+from core.repositories import TravelRepo
 from core.utils.enums import TravelField
 
 T = TypeVar("T")
@@ -17,8 +17,7 @@ class TravelService:
         self.travel_repo = travel_repo
 
     async def is_owner(self, tg_id: int, travel_id: int) -> bool:
-        travel = await self.get_with_access_check(tg_id, travel_id)
-        return travel is not None and travel.owner_id == tg_id
+        return await self.travel_repo.is_owner(tg_id, travel_id)
 
     async def list_by_tg_id(
         self,

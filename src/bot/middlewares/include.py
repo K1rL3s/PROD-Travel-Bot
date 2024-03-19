@@ -3,9 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from structlog.typing import FilteringBoundLogger
 
 from .outer.callback_answer import CallbackAnswerMiddleware
+from .outer.core_di import ServiceDIMiddleware
 from .outer.database import DBSessionMiddleware
 from .outer.logging import StructLoggingMiddleware
-from .outer.service_di import ServiceDIMiddleware
 from .outer.throttling import ThrottlingMiddleware
 from .outer.unknown_user import UnknownUserMiddleware
 from .outer.user_context import UserContextMiddleware

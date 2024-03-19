@@ -1,9 +1,11 @@
 from aiogram.filters.callback_data import CallbackData
 
 from bot.callbacks.paginate import Paginator
+from bot.utils.enums import BotMenu
 
 
 class NotesPaginator(Paginator, prefix="notes_paginator"):
+    menu: str = BotMenu.NOTES
     travel_id: int
 
 

@@ -24,15 +24,18 @@ from .phrases import error_text_by_field
 class Question:
     text: str
     key: str
+    is_optional: bool = False
 
 
 profile_create_steps = [
     Question(text="Как вас зовут?", key="name"),
     Question(text="Сколько вам лет?", key="age"),
     Question(text="В каком городе вы живёте?", key="city"),
+    Question(text="Из какой вы страны?", key="country"),
     Question(
         text="Расскажите о себе. Это будет описанием вашего профиля.",
         key="description",
+        is_optional=True,
     ),
 ]
 
@@ -122,8 +125,8 @@ class ProfileCreateScene(BaseScene, state="profile"):
             name=html_quote(answers["name"]),
             age=int(answers["age"]),
             city=html_quote(answers["city"]),
+            country=html_quote(answers["country"]),
             description=html_quote(answers["description"]),
-            country="timecountry",
         )
         await user_service.create(user)
         await message.answer(

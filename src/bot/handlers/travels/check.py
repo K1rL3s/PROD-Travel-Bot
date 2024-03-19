@@ -3,8 +3,8 @@ from aiogram.types import CallbackQuery
 
 from bot.callbacks.menu import OpenMenu
 from bot.callbacks.paginate import Paginator
-from bot.callbacks.travel import GetTravelData
-from bot.filters.travel import TravelCallbackAccess
+from bot.callbacks.travels import GetTravelData
+from bot.filters.travels import TravelCallbackAccess
 from bot.handlers.travels.funcs import format_travel
 from bot.keyboards.travels import one_travel_keyboard, travels_keyboard
 from bot.utils.enums import BotMenu

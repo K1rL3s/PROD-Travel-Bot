@@ -1,9 +1,11 @@
 from aiogram.filters.callback_data import CallbackData
 
 from bot.callbacks.paginate import Paginator
+from bot.utils.enums import BotMenu
 
 
 class LocationsPaginator(Paginator, prefix="locations_paginator"):
+    menu: str = BotMenu.LOCATIONS
     travel_id: int
 
 

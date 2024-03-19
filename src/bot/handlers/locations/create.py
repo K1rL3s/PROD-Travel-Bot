@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.scene import on
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.location import AddLocationData
+from bot.callbacks.locations import AddLocationData
 from bot.callbacks.state import InStateData
 from bot.handlers.base_scene import BaseScene
 from bot.keyboards.locations import locations_keyboard, one_location_keyboard

@@ -5,8 +5,8 @@ from aiogram.types import CallbackQuery, Message
 
 from bot.callbacks.notes import AddNoteData, NoteStatusData
 from bot.callbacks.state import InStateData
-from bot.filters.note import NoteDocumentFilter
-from bot.filters.travel import TravelCallbackAccess, TravelStateAccess
+from bot.filters.notes import NoteDocumentFilter
+from bot.filters.travels import TravelCallbackAccess, TravelStateAccess
 from bot.handlers.notes.phrases import TITLE_ERROR
 from bot.keyboards.notes import choose_status_keyboard, notes_keyboard
 from bot.keyboards.universal import cancel_keyboard
@@ -14,7 +14,7 @@ from bot.utils.enums import Action
 from bot.utils.states import NoteCreating
 from bot.utils.tg import delete_last_message
 from core.models import Note, TravelExtended
-from core.service.notes import NoteService
+from core.service.note import NoteService
 
 router = Router(name=__name__)
 

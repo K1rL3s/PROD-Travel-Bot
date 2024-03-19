@@ -1,3 +1,4 @@
+from .invite_link import InviteLinkModel
 from .location import LocationModel
 from .note import NoteModel
 from .travel import TravelModel
@@ -10,4 +11,5 @@ __all__ = (
     "TravelModel",
     "UserModel",
     "UsersToTravels",
+    "InviteLinkModel",
 )

@@ -2,8 +2,8 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.travel import EditTravelData, GetTravelData
-from bot.filters.travel import TravelCallbackOwner, TravelStateOwner
+from bot.callbacks.travels import EditTravelData, GetTravelData
+from bot.filters.travels import TravelCallbackOwner, TravelStateOwner
 from bot.keyboards.travels import edit_travel_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
 from bot.utils.html import html_quote

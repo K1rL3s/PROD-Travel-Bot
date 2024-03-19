@@ -1,17 +1,18 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.location import LocationsPaginator
+from bot.callbacks.locations import LocationsPaginator
+from bot.callbacks.members import MembersPaginator
 from bot.callbacks.menu import OpenMenu
 from bot.callbacks.notes import NotesPaginator
-from bot.callbacks.travel import (
+from bot.callbacks.travels import (
     AddTravelData,
     DeleteTravelData,
     EditTravelData,
     GetTravelData,
 )
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, LOCATION, NOTE
+from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, LOCATION, MEMBER, NOTE
 from bot.utils.enums import BotMenu
 from core.models import Travel
 from core.service.travel import TravelService
@@ -68,19 +69,15 @@ def one_travel_keyboard(
     builder = InlineKeyboardBuilder()
     builder.button(
         text=f"{LOCATION} Локации",
-        callback_data=LocationsPaginator(
-            menu=BotMenu.LOCATIONS,
-            page=0,
-            travel_id=travel.id,
-        ),
+        callback_data=LocationsPaginator(page=0, travel_id=travel.id),
     )
     builder.button(
         text=f"{NOTE} Заметки",
-        callback_data=NotesPaginator(
-            menu=BotMenu.NOTES,
-            page=0,
-            travel_id=travel.id,
-        ),
+        callback_data=NotesPaginator(page=0, travel_id=travel.id),
+    )
+    builder.button(
+        text=f"{MEMBER} Друзья",
+        callback_data=MembersPaginator(page=0, travel_id=travel.id),
     )
     builder.adjust(1, repeat=True)
 

@@ -1,14 +1,14 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.location import (
+from bot.callbacks.locations import (
     AddLocationData,
     DeleteLocationData,
     EditLocationData,
     GetLocationData,
     LocationsPaginator,
 )
-from bot.callbacks.travel import GetTravelData
+from bot.callbacks.travels import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
 from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, TRAVEL
 from bot.utils.enums import BotMenu
@@ -101,7 +101,6 @@ def one_location_keyboard(
         InlineKeyboardButton(
             text=f"{BACK} Назад",
             callback_data=LocationsPaginator(
-                menu=BotMenu.TRAVELS,
                 page=page,
                 travel_id=location.travel_id,
             ).pack(),

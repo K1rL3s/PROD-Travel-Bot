@@ -6,11 +6,14 @@ from aiogram.types import TelegramObject
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.service.location import LocationService
-from core.service.notes import NoteService
+from core.service.member import MemberService
+from core.service.note import NoteService
 from core.service.travel import TravelService
 from core.service.user import UserService
 from database.repositories import (
+    InviteLinkAlchemyRepo,
     LocationAlchemyRepo,
+    MemberAlchemyRepo,
     NoteAlchemyRepo,
     TravelAlchemyRepo,
     UserAlchemyRepo,
@@ -32,18 +35,22 @@ class ServiceDIMiddleware(BaseMiddleware):
         travel_repo = TravelAlchemyRepo(session)
         location_repo = LocationAlchemyRepo(session)
         note_repo = NoteAlchemyRepo(session)
+        member_repo = MemberAlchemyRepo(session)
+        invite_link_repo = InviteLinkAlchemyRepo(session)
 
         user_service = UserService(user_repo)
         travel_service = TravelService(travel_repo)
         location_service = LocationService(location_repo, travel_repo)
         note_service = NoteService(note_repo, travel_repo)
+        member_service = MemberService(member_repo, travel_repo, invite_link_repo)
 
         data.update(
             {
                 "user_service": user_service,
+                "travel_service": travel_service,
                 "location_service": location_service,
                 "note_service": note_service,
-                "travel_service": travel_service,
+                "member_service": member_service,
             }
         )
 
