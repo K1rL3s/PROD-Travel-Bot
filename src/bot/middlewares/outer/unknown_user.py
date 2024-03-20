@@ -9,6 +9,7 @@ from bot.callbacks.profile import ProfileData
 from bot.keyboards.start import fill_profile_keyboard
 from bot.middlewares.base import BaseInfoMiddleware
 from bot.utils.enums import SlashCommand
+from bot.utils.states import ProfileCreating
 from core.models import User
 
 
@@ -27,7 +28,7 @@ class UnknownUserMiddleware(BaseInfoMiddleware):
 
         if user is not None:
             return await handler(event, data)
-        if raw_state and "profile" in raw_state:
+        if ProfileCreating()(event, raw_state):
             return await handler(event, data)
 
         if isinstance(event.event, Message):

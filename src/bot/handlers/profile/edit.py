@@ -7,6 +7,7 @@ from bot.callbacks.state import InStateData
 from bot.keyboards.profile import edit_profile_fields_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
 from bot.utils.enums import Action
+from bot.utils.html import html_quote
 from bot.utils.states import ProfileState
 from bot.utils.tg import delete_last_message
 from core.models import User
@@ -52,25 +53,26 @@ for field in ProfileField.values():
         await state.set_state(ProfileState.editing)
 
 
-@router.message(F.text, ProfileState.editing)
+@router.message(F.text.as_("answer"), ProfileState.editing)
 async def edit_profile_field_enter(
     message: Message,
     bot: Bot,
     state: FSMContext,
     user: User,
     user_service: UserService,
+    answer: str,
 ) -> None:
     data = await state.get_data()
     edit_field: str = data["field"]
     validator = get_user_field_validator(edit_field)
     error_text = error_text_by_field[edit_field]
 
-    if not await validator(user_service, message.text):
+    if not validator(answer):
         await message.reply(text=error_text, reply_markup=back_cancel_keyboard)
         await delete_last_message(bot, state, message)
         return
 
-    setattr(user, edit_field, message.text)
+    setattr(user, edit_field, html_quote(answer))
     await user_service.update(user.id, user)
     await message.answer(
         text=format_user_profile(user),

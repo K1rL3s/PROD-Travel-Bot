@@ -1,6 +1,14 @@
 from aiogram.fsm.state import State, StatesGroup
 
 
+class ProfileCreating(StatesGroup):
+    name = State()
+    age = State()
+    city = State()
+    country = State()
+    descirption = State()
+
+
 class ProfileState(StatesGroup):
     editing = State()
 
