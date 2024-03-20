@@ -59,26 +59,28 @@ class TravelService:
     async def create(self, travel: Travel) -> TravelExtended:
         return await self.travel_repo.create(travel)
 
+    # Да, оно будет браковать изменение названия своего путешествия на такое же
+    @staticmethod
+    async def validate_title(travel_service: "TravelService", title: str) -> str | None:
+        if (
+            0 < len(title) <= MAX_TRAVEL_TITLE_LENGTH
+            and await travel_service.travel_repo.get_by_title(title) is None
+        ):
+            return title
+        return None
 
-# Да, оно будет браковать изменение названия своего путешествия на такое же
-async def _validate_title(travel_service: TravelService, title: str) -> str | None:
-    if (
-        0 < len(title) <= MAX_TRAVEL_TITLE_LENGTH
-        and await travel_service.travel_repo.get_by_title(title) is None
-    ):
-        return title
-
-
-async def _validate_description(_, description: str) -> str | None:
-    if 0 < len(description) <= MAX_TRAVEL_DESCRIPTION_LENGTH:
-        return description
+    @staticmethod
+    async def validate_description(_: "TravelService", description: str) -> str | None:
+        if 0 < len(description) <= MAX_TRAVEL_DESCRIPTION_LENGTH:
+            return description
+        return None
 
 
 def get_travel_field_validator(
     field: str,
 ) -> Callable[[TravelService, T], Awaitable[T | None]]:
     if field == TravelField.TITLE:
-        return _validate_title
+        return TravelService.validate_title
     if field == TravelField.DESCRIPTION:
-        return _validate_description
+        return TravelService.validate_description
     raise ValueError("Unknown field")

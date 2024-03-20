@@ -6,7 +6,7 @@ from bot.callbacks.menu import OpenMenu
 from bot.callbacks.profile import ProfileData
 from bot.callbacks.state import InStateData
 from bot.keyboards.profile import edit_profile_keyboard
-from bot.utils.enums import Action, BotMenu, SlashCommand, TextCommand
+from bot.utils.enums import Action, BotMenu, SlashCommand
 from bot.utils.states import ProfileState
 from core.models import User
 
@@ -31,7 +31,6 @@ async def check_my_profile_callback(
     )
 
 
-@router.message(F.text == TextCommand.PROFILE)
 @router.message(Command(SlashCommand.PROFILE))
 async def check_my_profile_message(
     message: Message,

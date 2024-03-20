@@ -9,7 +9,7 @@ from database.repositories.base import BaseAlchemyRepo
 
 
 class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
-    async def create(self, instance: Travel) -> Travel:
+    async def create(self, instance: Travel) -> TravelExtended:
         travel = TravelModel(**instance.model_dump())
         self.session.add(travel)
         await self.session.flush()

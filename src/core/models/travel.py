@@ -8,7 +8,7 @@ MAX_TRAVEL_DESCRIPTION_LENGTH = 1024
 
 
 class Travel(BasePydanticModel):
-    id: int | None = Field(None)
+    id: int | None = None
     owner_id: int
     title: str = Field(min_length=1, max_length=MAX_TRAVEL_TITLE_LENGTH)
     description: str = Field(min_length=1, max_length=MAX_TRAVEL_DESCRIPTION_LENGTH)

@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from pydantic import Field
-
 from core.models.base import BasePydanticModel
 from core.models.travel import Travel
 
@@ -12,9 +10,10 @@ INVITE_LINK_ID_REGEX = (
 
 
 class InviteLink(BasePydanticModel):
-    id: UUID | None = Field(None)
+    id: UUID | None = None
     travel_id: int
 
 
 class InviteLinkExtended(InviteLink):
+    id: UUID
     travel: Travel

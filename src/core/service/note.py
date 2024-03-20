@@ -74,17 +74,21 @@ class NoteService:
             return None
 
         note = await self.note_repo.get(note_id)
+        if note is None:
+            return None
+
         note.is_public = not note.is_public
         instanse = Note(**note.model_dump(exclude={"creator", "travel"}))
 
-        await self.note_repo.update(instanse.id, instanse)
+        await self.note_repo.update(note.id, instanse)
 
         return note
 
     @staticmethod
-    async def validate_title(_, title: str) -> str | None:
+    async def validate_title(_: "NoteService", title: str) -> str | None:
         if 0 < len(title) <= MAX_NOTE_TITLE_LENGTH:
             return title
+        return None
 
 
 def get_location_field_validator(

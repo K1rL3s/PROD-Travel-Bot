@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from pydantic import Field
-
 from core.models.base import BasePydanticModel
 from core.models.travel import Travel
 
@@ -12,7 +10,7 @@ MAX_LOCATION_ADDRESS_LENGTH = 256
 
 
 class Location(BasePydanticModel):
-    id: int | None = Field(None)
+    id: int | None = None
     travel_id: int
     title: str
     country: str

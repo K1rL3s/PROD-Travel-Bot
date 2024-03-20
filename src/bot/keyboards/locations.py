@@ -40,7 +40,7 @@ async def locations_keyboard(
         )
     ]
 
-    additional_buttons = []
+    additional_buttons: list[InlineKeyboardButton] = []
     if await travel_service.is_owner(tg_id, travel_id):
         additional_buttons.append(
             InlineKeyboardButton(

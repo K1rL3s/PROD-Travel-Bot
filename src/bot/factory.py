@@ -14,7 +14,6 @@ from settings import Settings
 
 
 async def on_startup(bot: Bot) -> None:
-    """Код, отрабатывающий при запуске бота."""
     user = await bot.me()
     logging.info(
         "Start polling for bot @%s id=%d - %r",
@@ -25,7 +24,6 @@ async def on_startup(bot: Bot) -> None:
 
 
 async def on_shutdown(bot: Bot, redis: Redis) -> None:
-    """Код, отрабатывающий при выключении бота."""
     await redis.close()
     close_all_sessions()
 
@@ -39,10 +37,11 @@ async def on_shutdown(bot: Bot, redis: Redis) -> None:
 
 
 async def set_commands(bot: Bot) -> bool:
-    """Установка команд для бота."""
     commands: dict[str, str] = {
         SlashCommand.START: "Старт",
         SlashCommand.HELP: "Помощь",
+        SlashCommand.TRAVELS: "Ваши путешествия",
+        SlashCommand.PROFILE: "Ваш профиль",
         SlashCommand.CANCEL: "Отмена ввода",
     }
 
@@ -87,5 +86,6 @@ async def create_bot(bot_token: str, parse_mode: str = ParseMode.HTML) -> Bot:
         parse_mode=parse_mode,
         disable_web_page_preview=True,
     )
+    await set_commands(bot)
 
     return bot

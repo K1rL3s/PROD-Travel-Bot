@@ -16,7 +16,7 @@ def paginate_keyboard(
     page: int = 0,
     rows: int = 3,
     width: int = 2,
-    additional_buttons: list[InlineKeyboardButton] = None,
+    additional_buttons: list[InlineKeyboardButton] | None = None,
     fabric: type[Paginator] = Paginator,
     **data: Any,
 ) -> InlineKeyboardMarkup:

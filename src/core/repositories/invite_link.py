@@ -8,4 +8,4 @@ from core.repositories.abc import RepoMeta
 
 class InviteLinkRepo(RepoMeta[InviteLink, InviteLinkExtended, UUID], ABC):
     async def update(self, id: Any, instance: Any) -> NoReturn:
-        return TypeError("Cant update invite link")
+        raise TypeError("Cant update invite link")

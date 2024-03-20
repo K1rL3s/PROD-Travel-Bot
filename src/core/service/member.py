@@ -1,3 +1,4 @@
+from typing import cast
 from uuid import UUID
 
 from core.models import InviteLink, InviteLinkExtended, TravelExtended, User
@@ -39,7 +40,10 @@ class MemberService(BaseService):
         tg_id: int,
         invite_id: UUID,
     ) -> TravelExtended | None:
-        invite_link = await self.invite_link_repo.get(invite_id)
+        invite_link = cast(
+            InviteLinkExtended,
+            await self.invite_link_repo.get(invite_id),
+        )
         if invite_link is None:
             return None
 

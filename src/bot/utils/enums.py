@@ -5,16 +5,17 @@ class SlashCommand(StrEnum):
     START = "start"
     HELP = "help"
     PROFILE = "profile"
+    TRAVELS = "travels"
     CANCEL = "cancel"
     STOP = "stop"
 
 
 class TextCommand(StrEnum):
-    START = "Старт"
-    HELP = "Помощь"
-    PROFILE = "📖Профиль"
-    TRAVELS = "✈️Путешествия"
-    CANCEL = "Отмена"
+    START = "👋 Старт"
+    HELP = "🤖 Помощь"
+    PROFILE = "📖 Профиль"
+    TRAVELS = "✈️ Путешествия"
+    CANCEL = "❌ Отмена"
     STOP = CANCEL
 
 
@@ -28,10 +29,7 @@ class BotMenu(StrEnum):
 
 
 class Action(StrEnum):
-    OPEN = "open"
-    CLOSE = "close"
     BACK = "back"
-    FORWARD = "forware"
 
     GET = "get"
     ADD = "add"

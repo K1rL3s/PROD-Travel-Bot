@@ -34,7 +34,7 @@ async def members_keyboard(
         for member in await member_service.list_with_access_check(tg_id, travel.id)
     ]
 
-    additional_buttons = []
+    additional_buttons: list[InlineKeyboardButton] = []
     if travel.owner_id == tg_id:
         additional_buttons.append(
             InlineKeyboardButton(

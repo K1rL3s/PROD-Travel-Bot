@@ -9,7 +9,7 @@ MAX_NOTE_TITLE_LENGTH = 64
 
 
 class Note(BasePydanticModel):
-    id: int | None = Field(None)
+    id: int | None = None
     title: str
     travel_id: int
     creator_id: int
