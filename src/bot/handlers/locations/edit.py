@@ -4,17 +4,24 @@ from aiogram.types import CallbackQuery, Message
 
 from bot.callbacks.locations import EditLocationData
 from bot.filters.locations import LocationCallbackOwner, LocationStateOwner
+from bot.filters.universal import FieldInState
 from bot.keyboards.locations import edit_location_keyboard
 from bot.keyboards.universal import back_cancel_keyboard
 from bot.utils.html import html_quote
 from bot.utils.states import LocationState
 from bot.utils.tg import delete_last_message
 from core.models import LocationExtended, User
-from core.service.location import LocationService, get_location_field_validator
+from core.service.geo import GeoService
+from core.service.location import (
+    LocationService,
+    get_location_field_validator,
+    validate_city,
+    validate_country,
+)
 from core.utils.enums import LocationField
 
 from .funcs import format_location
-from .phrases import error_text_by_field
+from .phrases import CITY_ERROR, COUNTRY_ERROR, error_text_by_field
 
 router = Router(name=__name__)
 
@@ -61,14 +68,85 @@ for field in LocationField.values():
         await state.set_state(LocationState.editing)
 
 
-@router.message(F.text, LocationState.editing, LocationStateOwner())
-async def edit_location_field_enter(
+@router.message(
+    F.text.as_("city"),
+    LocationState.editing,
+    LocationStateOwner(),
+    FieldInState("city"),
+)
+async def edit_city_entered(
     message: Message,
     bot: Bot,
     state: FSMContext,
     user: User,
     location: LocationExtended,
     location_service: LocationService,
+    geo_service: GeoService,
+    city: str,
+) -> None:
+    data = await state.get_data()
+    edit_field = "city"
+    page: int = data["page"]
+
+    city = validate_city(city) and await geo_service.normalize_city(city)
+    if not city:
+        await message.reply(text=CITY_ERROR, reply_markup=back_cancel_keyboard)
+        await delete_last_message(bot, state, message)
+        return
+
+    setattr(location, edit_field, html_quote(city))
+    await location_service.update_with_access_check(user.id, location.id, location)
+    await message.answer(
+        text=format_location(location),
+        reply_markup=edit_location_keyboard(location.id, page),
+    )
+    await delete_last_message(bot, state, message)
+
+
+@router.message(
+    F.text.as_("country"),
+    LocationState.editing,
+    LocationStateOwner(),
+    FieldInState("country"),
+)
+async def edit_country_entered(
+    message: Message,
+    bot: Bot,
+    state: FSMContext,
+    user: User,
+    location: LocationExtended,
+    location_service: LocationService,
+    geo_service: GeoService,
+    country: str,
+) -> None:
+    data = await state.get_data()
+    edit_field = "country"
+    page: int = data["page"]
+
+    country = validate_country(country) and await geo_service.normalize_country(country)
+    if not country:
+        await message.reply(text=COUNTRY_ERROR, reply_markup=back_cancel_keyboard)
+        await delete_last_message(bot, state, message)
+        return
+
+    setattr(location, edit_field, html_quote(country))
+    await location_service.update_with_access_check(user.id, location.id, location)
+    await message.answer(
+        text=format_location(location),
+        reply_markup=edit_location_keyboard(location.id, page),
+    )
+    await delete_last_message(bot, state, message)
+
+
+@router.message(F.text.as_("answer"), LocationState.editing, LocationStateOwner())
+async def edit_location_field_entered(
+    message: Message,
+    bot: Bot,
+    state: FSMContext,
+    user: User,
+    location: LocationExtended,
+    location_service: LocationService,
+    answer: str,
 ) -> None:
     data = await state.get_data()
     edit_field: str = data["field"]
@@ -76,12 +154,12 @@ async def edit_location_field_enter(
 
     validator = get_location_field_validator(edit_field)
     error_text = error_text_by_field[edit_field]
-    if (value := await validator(location_service, message.text)) is None:
+    if not validator(answer):
         await message.reply(text=error_text, reply_markup=back_cancel_keyboard)
         await delete_last_message(bot, state, message)
         return
 
-    setattr(location, edit_field, html_quote(value))
+    setattr(location, edit_field, html_quote(answer))
     await location_service.update_with_access_check(user.id, location.id, location)
     await message.answer(
         text=format_location(location),

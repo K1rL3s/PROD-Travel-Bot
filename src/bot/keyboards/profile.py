@@ -1,9 +1,4 @@
-from aiogram.types import (
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    KeyboardButton,
-    ReplyKeyboardMarkup,
-)
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.callbacks.menu import OpenMenu
@@ -34,7 +29,8 @@ for field_name, field_data in (
     ("1️⃣ Имя", ProfileField.NAME),
     ("2️⃣ Возраст", ProfileField.AGE),
     ("3️⃣ Город", ProfileField.CITY),
-    ("4️⃣ Описание", ProfileField.DESCRIPTION),
+    ("4️⃣ Страна", ProfileField.COUNTRY),
+    ("5️⃣ Описание", ProfileField.DESCRIPTION),
 ):
     builder.button(text=field_name, callback_data=EditProfileData(field=field_data))
 builder.button(
@@ -42,11 +38,3 @@ builder.button(
     callback_data=OpenMenu(menu=BotMenu.PROFILE),
 )
 edit_profile_fields_keyboard = builder.adjust(1, repeat=True).as_markup()
-
-
-def choose_country(countries: list[str]) -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(
-        one_time_keyboard=True,
-        resize_keyboard=True,
-        keyboard=[[KeyboardButton(text=country)] for country in countries],
-    )

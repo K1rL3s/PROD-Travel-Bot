@@ -1,7 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.fsm.scene import SceneRegistry
 
-from .locations.router import LocationCreateScene, locations_router
+from .locations.router import locations_router
 from .members.router import members_router
 from .notes.router import notes_router
 from .profile.router import profile_router
@@ -24,4 +24,4 @@ def include_routers(dp: Dispatcher) -> None:
 
 def register_scenes(dp: Dispatcher) -> None:
     scene_registry = SceneRegistry(dp, register_on_add=True)
-    scene_registry.add(TravelCreateScene, LocationCreateScene)
+    scene_registry.add(TravelCreateScene)

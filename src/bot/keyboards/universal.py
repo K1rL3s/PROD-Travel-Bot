@@ -1,4 +1,9 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 
 from bot.callbacks.menu import OpenMenu
 from bot.callbacks.state import InStateData
@@ -36,3 +41,11 @@ cancel_keyboard = InlineKeyboardMarkup(inline_keyboard=[[cancel_button]])
 back_cancel_keyboard = InlineKeyboardMarkup(
     inline_keyboard=[[back_button, cancel_button]]
 )
+
+
+def reply_keyboard_from_list(strings: list[str]) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(
+        one_time_keyboard=True,
+        resize_keyboard=True,
+        keyboard=[[KeyboardButton(text=string)] for string in strings],
+    )

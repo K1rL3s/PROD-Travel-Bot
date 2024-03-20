@@ -10,9 +10,8 @@ from bot.handlers.profile.phrases import (
     DESCRIPTION_ERROR,
     NAME_ERROR,
 )
-from bot.keyboards.profile import choose_country
 from bot.keyboards.start import start_keyboard
-from bot.keyboards.universal import cancel_keyboard
+from bot.keyboards.universal import cancel_keyboard, reply_keyboard_from_list
 from bot.utils.enums import Action
 from bot.utils.html import html_quote
 from bot.utils.states import ProfileCreating
@@ -85,12 +84,13 @@ async def profile_city_entered(
     geo_service: GeoService,
     city: str,
 ) -> None:
-    if validate_city(city) and (city := await geo_service.normalize_city(city)):
+    city = validate_city(city) and await geo_service.normalize_city(city)
+    if city:
         text = "Из какой вы страны?"
         await state.set_state(ProfileCreating.country)
         await state.update_data(city=city)
         countries = await geo_service.get_countries_by_city(city)
-        keyboard = choose_country(countries)
+        keyboard = reply_keyboard_from_list(countries)
     else:
         text = CITY_ERROR
         keyboard = cancel_keyboard

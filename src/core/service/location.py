@@ -1,4 +1,4 @@
-from typing import Any, Callable, Coroutine, TypeVar
+from typing import Callable, TypeVar
 
 from core.models import Location, LocationExtended
 from core.models.location import (
@@ -75,52 +75,44 @@ class LocationService:
     async def create(self, location: Location) -> LocationExtended:
         return await self.location_repo.create(location)
 
-    @staticmethod
-    async def validate_title(_: "LocationService", title: str) -> str | None:
-        if 0 < len(title) <= MAX_LOCATION_TITLE_LENGTH:
-            return title
-        return None
 
-    @staticmethod
-    async def validate_city(_: "LocationService", city: str) -> str | None:
-        if 0 < len(city) <= MAX_LOCATION_CITY_LENGTH:
-            return city
-        return None
+def validate_title(title: str) -> bool:
+    return 0 < len(title) <= MAX_LOCATION_TITLE_LENGTH
 
-    @staticmethod
-    async def validate_country(_: "LocationService", country: str) -> str | None:
-        if 0 < len(country) <= MAX_LOCATION_COUNTRY_LENGTH:
-            return country
-        return None
 
-    @staticmethod
-    async def validate_address(_: "LocationService", address: str) -> str | None:
-        if 0 < len(address) <= MAX_LOCATION_ADDRESS_LENGTH:
-            return address
-        return None
+def validate_city(city: str) -> bool:
+    return 0 < len(city) <= MAX_LOCATION_CITY_LENGTH
 
-    @staticmethod
-    async def validate_start_at(_: "LocationService", start_at: str) -> str | None:
-        return start_at
 
-    @staticmethod
-    async def validate_end_at(_: "LocationService", end_at: str) -> str | None:
-        return end_at
+def validate_country(country: str) -> bool:
+    return 0 < len(country) <= MAX_LOCATION_COUNTRY_LENGTH
+
+
+def validate_address(address: str) -> bool:
+    return 0 < len(address) <= MAX_LOCATION_ADDRESS_LENGTH
+
+
+def validate_start_at(start_at: str) -> bool:
+    return True
+
+
+def validate_end_at(end_at: str) -> bool:
+    return True
 
 
 def get_location_field_validator(
     field: str,
-) -> Callable[[LocationService, T], Coroutine[Any, Any, T | None]]:
+) -> Callable[[str], bool]:
     if field == LocationField.TITLE:
-        return LocationService.validate_title
+        return validate_title
     if field == LocationField.CITY:
-        return LocationService.validate_city
+        return validate_city
     if field == LocationField.COUNTRY:
-        return LocationService.validate_country
+        return validate_country
     if field == LocationField.ADDRESS:
-        return LocationService.validate_address
+        return validate_address
     if field == LocationField.START_AT:
-        return LocationService.validate_start_at
+        return validate_start_at
     if field == LocationField.END_AT:
-        return LocationService.validate_end_at
+        return validate_end_at
     raise ValueError("Unknown field")

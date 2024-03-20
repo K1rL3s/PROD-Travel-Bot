@@ -9,6 +9,21 @@ class ProfileCreating(StatesGroup):
     descirption = State()
 
 
+class NoteCreating(StatesGroup):
+    title = State()
+    status = State()
+    file = State()
+
+
+class LocationCreating(StatesGroup):
+    title = State()
+    city = State()
+    country = State()
+    address = State()
+    start_at = State()
+    end_at = State()
+
+
 class ProfileState(StatesGroup):
     editing = State()
 
@@ -19,9 +34,3 @@ class TravelState(StatesGroup):
 
 class LocationState(StatesGroup):
     editing = State()
-
-
-class NoteCreating(StatesGroup):
-    title = State()
-    status = State()
-    file = State()

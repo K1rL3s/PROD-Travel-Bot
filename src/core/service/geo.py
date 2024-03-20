@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Any, cast
 
 from core.geo import GeoLocation, GeoLocator
 from core.service.base import BaseService
@@ -13,49 +13,42 @@ class GeoService(BaseService):
             "extratags": True,
         }
 
+    async def geocode(
+        self,
+        query: str,
+        **kwargs: Any,
+    ) -> GeoLocation | list[GeoLocation] | None:
+        if kwargs:
+            options = self.kwargs.copy()
+            options.update(kwargs)
+        else:
+            options = self.kwargs
+        return await self.geolocator.geocode(query, **options)
+
     async def normalize_city(self, city: str) -> str | None:
         location = cast(
             GeoLocation,
-            await self.geolocator.geocode(
-                city,
-                **self.kwargs,
-                featuretype="city",
-                exactly_one=True,
-            ),
+            await self.geocode(city, featuretype="city", exactly_one=True),
         )
         if not location:
             return None
 
-        if location.raw.get("address", {}).get("city"):
-            return location.raw["address"]["city"]
-        return None
+        return location.raw.get("address", {}).get("city")
 
     async def normalize_country(self, country: str) -> str | None:
         location = cast(
             GeoLocation,
-            await self.geolocator.geocode(
-                country,
-                **self.kwargs,
-                featuretype="country",
-            ),
+            await self.geocode(country, featuretype="country"),
         )
         if not location:
             return None
 
-        if location.raw.get("address", {}).get("country"):
-            return location.raw["address"]["country"]
-        return None
+        return location.raw.get("address", {}).get("country")
 
     async def get_countries_by_city(self, city: str) -> list[str]:
         locations = cast(
             list[GeoLocation],
-            await self.geolocator.geocode(
-                city,
-                **self.kwargs,
-                featuretype="city",
-                exactly_one=False,
-                limit=5,
-            ),
+            await self.geocode(city, featuretype="city", exactly_one=False, limit=10),
         )
         if not locations:
             return []
@@ -67,3 +60,10 @@ class GeoService(BaseService):
                 if location.raw.get("address", {}).get("country")
             }
         )
+
+    async def get_address(self, title: str, city: str, country: str) -> str | None:
+        location = cast(GeoLocation, await self.geocode(f"{title} {city} {country}"))
+        if not location:
+            return None
+
+        return location.address
