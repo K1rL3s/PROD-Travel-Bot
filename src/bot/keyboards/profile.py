@@ -1,8 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.menu import OpenMenu
-from bot.callbacks.profile import EditProfileData, ProfileData
+from bot.callbacks import EditProfileData, OpenMenu, ProfileData
 from bot.keyboards.universal import BACK, EDIT
 from bot.utils.enums import Action, BotMenu
 from core.utils.enums import ProfileField

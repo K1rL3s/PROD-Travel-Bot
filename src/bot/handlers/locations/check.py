@@ -1,14 +1,13 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.locations import GetLocationData, LocationsPaginator
-from bot.filters.locations import LocationCallbackAccess
-from bot.filters.travels import TravelCallbackAccess
-from bot.handlers.locations.funcs import format_location
-from bot.keyboards.locations import locations_keyboard, one_location_keyboard
+from bot.callbacks import GetLocationData, LocationsPaginator
+from bot.filters import LocationCallbackAccess, TravelCallbackAccess
+from bot.keyboards import locations_keyboard, one_location_keyboard
 from core.models import LocationExtended, TravelExtended
-from core.service.location import LocationService
-from core.service.travel import TravelService
+from core.services import LocationService, TravelService
+
+from .funcs import format_location
 
 router = Router(name=__name__)
 

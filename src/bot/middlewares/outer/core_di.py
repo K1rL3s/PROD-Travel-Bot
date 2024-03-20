@@ -7,12 +7,12 @@ from geopy import Nominatim
 from geopy.adapters import AioHTTPAdapter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.service.geo import GeoService
-from core.service.location import LocationService
-from core.service.member import MemberService
-from core.service.note import NoteService
-from core.service.travel import TravelService
-from core.service.user import UserService
+from core.services.geo import GeoService
+from core.services.location import LocationService
+from core.services.member import MemberService
+from core.services.note import NoteService
+from core.services.travel import TravelService
+from core.services.user import UserService
 from database.repositories import (
     InviteLinkAlchemyRepo,
     LocationAlchemyRepo,

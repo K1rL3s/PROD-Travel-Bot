@@ -5,11 +5,11 @@ from aiogram.filters import Command, CommandStart, MagicData
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.menu import OpenMenu
-from bot.keyboards.start import fill_profile_keyboard, start_keyboard
+from bot.callbacks import OpenMenu
+from bot.keyboards import fill_profile_keyboard, start_keyboard
 from bot.utils.enums import BotMenu
 from core.models.invite_link import INVITE_LINK_ID_REGEX
-from core.service.member import MemberService
+from core.services import MemberService
 
 start_router = Router(name=__name__)
 

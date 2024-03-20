@@ -2,30 +2,23 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.profile import ProfileData
-from bot.handlers.profile.phrases import (
-    AGE_ERROR,
-    CITY_ERROR,
-    COUNTRY_ERROR,
-    DESCRIPTION_ERROR,
-    NAME_ERROR,
-)
-from bot.keyboards.start import start_keyboard
-from bot.keyboards.universal import cancel_keyboard, reply_keyboard_from_list
+from bot.callbacks import ProfileData
+from bot.keyboards import cancel_keyboard, reply_keyboard_from_list, start_keyboard
 from bot.utils.enums import Action
 from bot.utils.html import html_quote
 from bot.utils.states import ProfileCreating
 from bot.utils.tg import delete_last_message
 from core.models import User
-from core.service.geo import GeoService
-from core.service.user import (
-    UserService,
+from core.services import GeoService, UserService
+from core.services.user import (
     validate_age,
     validate_city,
     validate_country,
     validate_description,
     validate_name,
 )
+
+from .phrases import AGE_ERROR, CITY_ERROR, COUNTRY_ERROR, DESCRIPTION_ERROR, NAME_ERROR
 
 router = Router(name=__name__)
 

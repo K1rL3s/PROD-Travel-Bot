@@ -3,7 +3,7 @@ from typing import Any
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import ButtonType, InlineKeyboardBuilder
 
-from bot.callbacks.paginate import Paginator
+from bot.callbacks import Paginator
 from bot.keyboards.universal import start_button
 
 PAGE_BACK = "⬅️Назад"

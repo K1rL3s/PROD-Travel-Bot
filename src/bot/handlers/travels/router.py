@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from bot.callbacks.travels import AddTravelData
+from bot.callbacks import AddTravelData
 
 from .check import router as check_router
 from .create import TravelCreateScene

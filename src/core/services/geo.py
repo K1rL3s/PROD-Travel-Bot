@@ -1,7 +1,7 @@
 from typing import Any, cast
 
 from core.geo import GeoLocation, GeoLocator
-from core.service.base import BaseService
+from core.services.base import BaseService
 
 
 class GeoService(BaseService):

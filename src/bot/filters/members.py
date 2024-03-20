@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from core.repositories import UserRepo
-from core.service.user import UserService
+from core.services.user import UserService
 
 
 def _check_callback_data(callback_data: Any) -> int | None:

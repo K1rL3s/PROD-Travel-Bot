@@ -2,15 +2,14 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.menu import OpenMenu
-from bot.callbacks.paginate import Paginator
-from bot.callbacks.travels import GetTravelData
-from bot.filters.travels import TravelCallbackAccess
-from bot.handlers.travels.funcs import format_travel
-from bot.keyboards.travels import one_travel_keyboard, travels_keyboard
+from bot.callbacks import GetTravelData, OpenMenu, Paginator
+from bot.filters import TravelCallbackAccess
+from bot.keyboards import one_travel_keyboard, travels_keyboard
 from bot.utils.enums import BotMenu, SlashCommand
 from core.models import TravelExtended
-from core.service.travel import TravelService
+from core.services import TravelService
+
+from .funcs import format_travel
 
 router = Router(name=__name__)
 

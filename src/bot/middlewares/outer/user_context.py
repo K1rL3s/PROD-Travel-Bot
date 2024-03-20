@@ -6,7 +6,7 @@ from aiogram.types import User as TGUser
 
 from bot.middlewares.base import BaseInfoMiddleware
 from core.models import User
-from core.service.user import UserService
+from core.services.user import UserService
 
 
 class UserContextMiddleware(BaseInfoMiddleware):

@@ -1,12 +1,11 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.members import GetMemberData, MembersPaginator
-from bot.filters.members import MemberCallbackDI
-from bot.filters.travels import TravelCallbackAccess
-from bot.keyboards.members import members_keyboard, one_member_keyboard
+from bot.callbacks import GetMemberData, MembersPaginator
+from bot.filters import MemberCallbackDI, TravelCallbackAccess
+from bot.keyboards import members_keyboard, one_member_keyboard
 from core.models import TravelExtended, User
-from core.service.member import MemberService
+from core.services import MemberService
 
 from .funcs import format_member
 

@@ -3,9 +3,9 @@ from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.travels import DeleteTravelData, EditTravelData, GetTravelData
-from bot.filters.travels import TravelCallbackAccess, TravelStateAccess
-from bot.keyboards.travels import back_to_travels_keyboard
+from bot.callbacks import DeleteTravelData, EditTravelData, GetTravelData
+from bot.filters import TravelCallbackAccess, TravelStateAccess
+from bot.keyboards import back_to_travels_keyboard
 from bot.utils.states import TravelState
 from bot.utils.tg import delete_last_message
 

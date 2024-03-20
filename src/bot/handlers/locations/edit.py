@@ -2,18 +2,15 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.locations import EditLocationData
-from bot.filters.locations import LocationCallbackOwner, LocationStateOwner
-from bot.filters.universal import FieldInState
-from bot.keyboards.locations import edit_location_keyboard
-from bot.keyboards.universal import back_cancel_keyboard
+from bot.callbacks import EditLocationData
+from bot.filters import FieldInState, LocationCallbackOwner, LocationStateOwner
+from bot.keyboards import back_cancel_keyboard, edit_location_keyboard
 from bot.utils.html import html_quote
 from bot.utils.states import LocationState
 from bot.utils.tg import delete_last_message
 from core.models import LocationExtended, User
-from core.service.geo import GeoService
-from core.service.location import (
-    LocationService,
+from core.services import GeoService, LocationService
+from core.services.location import (
     get_location_field_validator,
     validate_city,
     validate_country,

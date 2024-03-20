@@ -1,11 +1,11 @@
 from aiogram import Router
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.notes import DeleteNoteData
-from bot.filters.notes import NoteCallbackOwner
-from bot.keyboards.notes import notes_keyboard
+from bot.callbacks import DeleteNoteData
+from bot.filters import NoteCallbackOwner
+from bot.keyboards import notes_keyboard
 from core.models import NoteExtended
-from core.service.note import NoteService
+from core.services import NoteService
 
 router = Router(name=__name__)
 

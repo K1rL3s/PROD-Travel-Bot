@@ -4,7 +4,7 @@ from uuid import UUID
 from core.models import InviteLink, InviteLinkExtended, TravelExtended, User
 from core.repositories import InviteLinkRepo, TravelRepo
 from core.repositories.member import MemberRepo
-from core.service.base import BaseService
+from core.services.base import BaseService
 
 
 class MemberService(BaseService):

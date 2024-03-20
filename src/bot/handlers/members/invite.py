@@ -3,11 +3,11 @@ from typing import cast
 from aiogram import Bot, Router
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.members import AddMemberData
-from bot.filters.travels import TravelCallbackOwner
-from bot.keyboards.members import members_keyboard
+from bot.callbacks import AddMemberData
+from bot.filters import TravelCallbackOwner
+from bot.keyboards import members_keyboard
 from core.models import InviteLinkExtended, TravelExtended
-from core.service.member import MemberService
+from core.services import MemberService
 
 from .funcs import format_invite_link
 

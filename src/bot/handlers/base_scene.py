@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.scene import Scene, on
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.state import InStateData
+from bot.callbacks import InStateData
 from bot.utils.enums import Action
 
 

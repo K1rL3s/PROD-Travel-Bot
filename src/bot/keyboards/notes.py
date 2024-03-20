@@ -1,20 +1,20 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.notes import (
+from bot.callbacks import (
     AddNoteData,
     DeleteNoteData,
     GetNoteData,
+    GetTravelData,
     NotesPaginator,
     NoteStatusData,
     SwitchNoteData,
 )
-from bot.callbacks.travels import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
 from bot.keyboards.universal import ADD, BACK, DELETE, TRAVEL, cancel_button
 from bot.utils.enums import BotMenu
 from core.models import Note, Travel
-from core.service.note import NoteService
+from core.services import NoteService
 
 PUBLIC = "👨‍👩‍👦"
 PRIVATE = "🤫"

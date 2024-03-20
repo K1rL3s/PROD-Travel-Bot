@@ -2,23 +2,16 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.profile import EditProfileData, ProfileData
-from bot.callbacks.state import InStateData
-from bot.filters.universal import FieldInState
-from bot.keyboards.profile import edit_profile_fields_keyboard
-from bot.keyboards.universal import back_cancel_keyboard
+from bot.callbacks import EditProfileData, InStateData, ProfileData
+from bot.filters import FieldInState
+from bot.keyboards import back_cancel_keyboard, edit_profile_fields_keyboard
 from bot.utils.enums import Action
 from bot.utils.html import html_quote
 from bot.utils.states import ProfileState
 from bot.utils.tg import delete_last_message
 from core.models import User
-from core.service.geo import GeoService
-from core.service.user import (
-    UserService,
-    get_user_field_validator,
-    validate_city,
-    validate_country,
-)
+from core.services import GeoService, UserService
+from core.services.user import get_user_field_validator, validate_city, validate_country
 from core.utils.enums import ProfileField
 
 from .funcs import format_user_profile

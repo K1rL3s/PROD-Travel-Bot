@@ -3,18 +3,16 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.notes import AddNoteData, NoteStatusData
-from bot.callbacks.state import InStateData
-from bot.filters.notes import NoteDocumentFilter
-from bot.filters.travels import TravelCallbackAccess, TravelStateAccess
-from bot.handlers.notes.phrases import TITLE_ERROR
-from bot.keyboards.notes import choose_status_keyboard, notes_keyboard
-from bot.keyboards.universal import cancel_keyboard
+from bot.callbacks import AddNoteData, InStateData, NoteStatusData
+from bot.filters import NoteDocumentFilter, TravelCallbackAccess, TravelStateAccess
+from bot.keyboards import cancel_keyboard, choose_status_keyboard, notes_keyboard
 from bot.utils.enums import Action
 from bot.utils.states import NoteCreating
 from bot.utils.tg import delete_last_message
 from core.models import Note, TravelExtended
-from core.service.note import NoteService
+from core.services import NoteService
+
+from .phrases import TITLE_ERROR
 
 router = Router(name=__name__)
 

@@ -1,20 +1,19 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.locations import (
+from bot.callbacks import (
     AddLocationData,
     DeleteLocationData,
     EditLocationData,
     GetLocationData,
+    GetTravelData,
     LocationsPaginator,
 )
-from bot.callbacks.travels import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
 from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, TRAVEL
 from bot.utils.enums import BotMenu
 from core.models import LocationExtended
-from core.service.location import LocationService
-from core.service.travel import TravelService
+from core.services import LocationService, TravelService
 from core.utils.enums import LocationField
 
 

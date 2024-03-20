@@ -1,8 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.menu import OpenMenu
-from bot.callbacks.profile import ProfileData
+from bot.callbacks import OpenMenu, ProfileData
 from bot.utils.enums import Action, BotMenu, TextCommand
 
 builder = InlineKeyboardBuilder()

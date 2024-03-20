@@ -5,8 +5,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
 )
 
-from bot.callbacks.menu import OpenMenu
-from bot.callbacks.state import InStateData
+from bot.callbacks import InStateData, OpenMenu
 from bot.utils.enums import Action, BotMenu
 
 YES = "✅"

@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, TypeVar
+from typing import Callable, TypeVar
 
 from core.models import Note, NoteExtended
 from core.models.note import MAX_NOTE_TITLE_LENGTH
@@ -84,16 +84,12 @@ class NoteService:
 
         return note
 
-    @staticmethod
-    async def validate_title(_: "NoteService", title: str) -> str | None:
-        if 0 < len(title) <= MAX_NOTE_TITLE_LENGTH:
-            return title
-        return None
+
+def validate_title(title: str) -> bool:
+    return 0 < len(title) <= MAX_NOTE_TITLE_LENGTH
 
 
-def get_location_field_validator(
-    field: str,
-) -> Callable[[NoteService, T], Awaitable[T | None]]:
+def get_note_field_validator(field: str) -> Callable[[str], bool]:
     if field == NoteField.TITLE:
-        return NoteService.validate_title
+        return validate_title
     raise ValueError("Unknown field")

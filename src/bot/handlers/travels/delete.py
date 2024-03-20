@@ -2,11 +2,11 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.travels import DeleteTravelData
-from bot.filters.travels import TravelCallbackOwner
-from bot.keyboards.travels import delete_travel_keyboard, travels_keyboard
+from bot.callbacks import DeleteTravelData
+from bot.filters import TravelCallbackOwner
+from bot.keyboards import delete_travel_keyboard, travels_keyboard
 from core.models import TravelExtended
-from core.service.travel import TravelService
+from core.services import TravelService
 
 router = Router(name=__name__)
 

@@ -2,15 +2,14 @@ from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.travels import EditTravelData, GetTravelData
-from bot.filters.travels import TravelCallbackOwner, TravelStateOwner
-from bot.keyboards.travels import edit_travel_keyboard
-from bot.keyboards.universal import back_cancel_keyboard
+from bot.callbacks import EditTravelData, GetTravelData
+from bot.filters import TravelCallbackOwner, TravelStateOwner
+from bot.keyboards import back_cancel_keyboard, edit_travel_keyboard
 from bot.utils.html import html_quote
 from bot.utils.states import TravelState
 from bot.utils.tg import delete_last_message
 from core.models import TravelExtended, User
-from core.service.travel import TravelService, get_travel_field_validator
+from core.services import TravelService, get_travel_field_validator
 from core.utils.enums import TravelField
 
 from .funcs import format_travel

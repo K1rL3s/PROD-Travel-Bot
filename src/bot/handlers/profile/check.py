@@ -2,10 +2,8 @@ from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Message
 
-from bot.callbacks.menu import OpenMenu
-from bot.callbacks.profile import ProfileData
-from bot.callbacks.state import InStateData
-from bot.keyboards.profile import edit_profile_keyboard
+from bot.callbacks import InStateData, OpenMenu, ProfileData
+from bot.keyboards import edit_profile_keyboard
 from bot.utils.enums import Action, BotMenu, SlashCommand
 from bot.utils.states import ProfileState
 from core.models import User

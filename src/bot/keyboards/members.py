@@ -1,18 +1,18 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.callbacks.members import (
+from bot.callbacks import (
     AddMemberData,
     DeleteMemberData,
     GetMemberData,
+    GetTravelData,
     MembersPaginator,
 )
-from bot.callbacks.travels import GetTravelData
 from bot.keyboards.paginate import paginate_keyboard
 from bot.keyboards.universal import ADD, BACK, DELETE, TRAVEL
 from bot.utils.enums import BotMenu
 from core.models import Travel, User
-from core.service.member import MemberService
+from core.services import MemberService
 
 
 async def members_keyboard(
