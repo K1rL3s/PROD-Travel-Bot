@@ -26,6 +26,8 @@ class LocationCreating(StatesGroup):
 
 class ProfileState(StatesGroup):
     editing = State()
+    editing_city = State()
+    editing_country = State()
 
 
 class TravelState(StatesGroup):
@@ -34,3 +36,5 @@ class TravelState(StatesGroup):
 
 class LocationState(StatesGroup):
     editing = State()
+    editing_city = State()
+    editing_country = State()

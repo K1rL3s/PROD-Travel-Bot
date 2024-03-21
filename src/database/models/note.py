@@ -1,6 +1,7 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing_extensions import TYPE_CHECKING
 
 from core.models.note import MAX_NOTE_FILE_ID_LENGTH, MAX_NOTE_TITLE_LENGTH
 from database.models.base import AlchemyBaseModel

@@ -104,6 +104,7 @@ class TravelCreateScene(BaseScene, state="travel"):
         await state.update_data(answers=answers)
         await self.wizard.retake(step=step + 1)
 
+    # TODO: Проверка на занятость названия
     @on.message.exit()
     async def on_message_exit(
         self,

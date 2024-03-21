@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from core.models import Travel, TravelExtended
-from core.repositories.abc import RepoMeta
+from core.repositories.abc_meta import RepoMeta
 
 
 class TravelRepo(RepoMeta[Travel, TravelExtended, int], ABC):

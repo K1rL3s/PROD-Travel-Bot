@@ -1,5 +1,5 @@
-from abc import ABC
-from typing import Any, Callable, Generic, Protocol, TypeVar
+from abc import ABC, abstractmethod
+from typing import Any, Generic, Protocol, TypeVar
 
 from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
@@ -35,7 +35,7 @@ class BaseAccessFilter(BaseFilter, Generic[M, K], ABC):
         tg_id: int,
         obj_id: K,
         service: Service[M, K],
-    ) -> bool | dict[str, Any]:
+    ) -> bool | dict[str, M]:
         if not await service.is_owner(tg_id, obj_id):
             return False
 
@@ -49,7 +49,7 @@ class BaseAccessFilter(BaseFilter, Generic[M, K], ABC):
         tg_id: int,
         obj_id: K,
         service: Service[M, K],
-    ) -> bool | dict[str, Any]:
+    ) -> bool | dict[str, M]:
         obj = await service.get_with_access_check(tg_id, obj_id)
         if obj:
             return {self.add_context_var: obj}
@@ -61,7 +61,6 @@ class CallbackAccess(BaseAccessFilter[M, K], ABC):
         self,
         service_context_var: str,
         add_context_var: str,
-        callback_data_checker: Callable[[Any], K],
         owner_mode: bool = False,
     ) -> None:
         super().__init__(
@@ -69,15 +68,19 @@ class CallbackAccess(BaseAccessFilter[M, K], ABC):
             add_context_var=add_context_var,
             owner_mode=owner_mode,
         )
-        self.callback_data_checker = callback_data_checker
+
+    @staticmethod
+    @abstractmethod
+    def _check_callback_data(callback_data: Any) -> int | None:
+        pass
 
     async def __call__(
         self,
         callback: CallbackQuery,
         callback_data: Any,
         **kwargs: Any,
-    ) -> bool | dict[str, Any]:
-        obj_id = self.callback_data_checker(callback_data)
+    ) -> bool | dict[str, M]:
+        obj_id = self._check_callback_data(callback_data)
         if obj_id is None:
             return False
 
@@ -110,7 +113,7 @@ class StateAccess(BaseAccessFilter[M, K], ABC):
         state: FSMContext,
         user: User,
         **kwargs: Any,
-    ) -> bool | dict[str, Any]:
+    ) -> bool | dict[str, M]:
         data = await state.get_data()
         obj_id: K | None = data.get(self.state_key)
 

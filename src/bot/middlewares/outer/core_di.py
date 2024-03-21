@@ -3,7 +3,6 @@ from typing import Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
-from geopy import Nominatim
 from geopy.adapters import AioHTTPAdapter
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,6 +13,8 @@ from core.services.note import NoteService
 from core.services.travel import TravelService
 from core.services.user import UserService
 from database.repositories import (
+    CityAlchemyRepo,
+    CountryAlchemyRepo,
     InviteLinkAlchemyRepo,
     LocationAlchemyRepo,
     MemberAlchemyRepo,
@@ -21,6 +22,7 @@ from database.repositories import (
     TravelAlchemyRepo,
     UserAlchemyRepo,
 )
+from geo import GeoPyLocator
 
 
 class ServiceDIMiddleware(BaseMiddleware):
@@ -40,6 +42,8 @@ class ServiceDIMiddleware(BaseMiddleware):
         note_repo = NoteAlchemyRepo(session)
         member_repo = MemberAlchemyRepo(session)
         invite_link_repo = InviteLinkAlchemyRepo(session)
+        country_repo = CountryAlchemyRepo(session)
+        city_repo = CityAlchemyRepo(session)
 
         user_service = UserService(user_repo)
         travel_service = TravelService(travel_repo)
@@ -47,12 +51,12 @@ class ServiceDIMiddleware(BaseMiddleware):
         note_service = NoteService(note_repo, travel_repo)
         member_service = MemberService(member_repo, travel_repo, invite_link_repo)
 
-        async with Nominatim(
+        async with GeoPyLocator(
             timeout=10,
             user_agent="travel-k1rl3s-bot-application",
             adapter_factory=AioHTTPAdapter,
         ) as geolocator:
-            geo_service = GeoService(geolocator)
+            geo_service = GeoService(geolocator, country_repo, city_repo)
 
             data.update(
                 {

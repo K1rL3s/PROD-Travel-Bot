@@ -3,7 +3,7 @@ from typing import Any, NoReturn
 from uuid import UUID
 
 from core.models import InviteLink, InviteLinkExtended
-from core.repositories.abc import RepoMeta
+from core.repositories.abc_meta import RepoMeta
 
 
 class InviteLinkRepo(RepoMeta[InviteLink, InviteLinkExtended, UUID], ABC):

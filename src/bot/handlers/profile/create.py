@@ -32,7 +32,7 @@ async def start_create_profile(callback: CallbackQuery, state: FSMContext) -> No
 
 
 @router.message(F.text.as_("name"), ProfileCreating.name)
-async def profile_name_entered(
+async def name_entered(
     message: Message,
     bot: Bot,
     state: FSMContext,
@@ -51,7 +51,7 @@ async def profile_name_entered(
 
 
 @router.message(F.text.as_("age"), ProfileCreating.age)
-async def profile_age_entered(
+async def age_entered(
     message: Message,
     bot: Bot,
     state: FSMContext,
@@ -70,7 +70,7 @@ async def profile_age_entered(
 
 
 @router.message(F.text.as_("city"), ProfileCreating.city)
-async def profile_city_entered(
+async def city_entered(
     message: Message,
     bot: Bot,
     state: FSMContext,
@@ -94,7 +94,7 @@ async def profile_city_entered(
 
 
 @router.message(F.text.as_("country"), ProfileCreating.country)
-async def profile_country_entered(
+async def country_entered(
     message: Message,
     bot: Bot,
     state: FSMContext,
@@ -121,11 +121,12 @@ async def profile_country_entered(
 
 
 @router.message(F.text.as_("description"), ProfileCreating.descirption)
-async def profile_description_entered(
+async def description_entered(
     message: Message,
     bot: Bot,
     state: FSMContext,
     user_service: UserService,
+    geo_service: GeoService,
     description: str,
 ) -> None:
     if not validate_description(description):
@@ -140,12 +141,14 @@ async def profile_description_entered(
     )
 
     data = await state.get_data()
+    country = await geo_service.create_or_get_country(data["country"])
+    city = await geo_service.create_or_get_city(data["city"], country.title)
     user = User(
         id=message.from_user.id,
         name=html_quote(data["name"]),
         age=int(data["age"]),
-        city=html_quote(data["city"]),
-        country=html_quote(data["country"]),
+        city_id=city.id,
+        country_id=country.id,
         description=html_quote(description),
     )
     await user_service.create(user)

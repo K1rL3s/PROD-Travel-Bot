@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from core.models import Location, LocationExtended
-from core.repositories.abc import RepoMeta
+from core.repositories.abc_meta import RepoMeta
 
 
 class LocationRepo(RepoMeta[Location, LocationExtended, int], ABC):

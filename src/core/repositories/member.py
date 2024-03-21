@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, NoReturn
 
 from core.models import User
-from core.repositories.abc import RepoMeta
+from core.repositories.abc_meta import RepoMeta
 
 
 class MemberRepo(RepoMeta[User, User, int], ABC):

@@ -11,6 +11,7 @@ from bot.utils.states import NoteCreating
 from bot.utils.tg import delete_last_message
 from core.models import Note, TravelExtended
 from core.services import NoteService
+from core.services.note import validate_title
 
 from .phrases import TITLE_ERROR
 
@@ -31,26 +32,28 @@ async def create_note(
     )
 
 
-@router.message(F.text, NoteCreating.title)
+@router.message(F.text.as_("title"), NoteCreating.title)
 async def create_note_title(
     message: Message,
     bot: Bot,
     state: FSMContext,
-    note_service: NoteService,
+    title: str,
 ) -> None:
-    if (title := await NoteService.validate_title(note_service, message.text)) is None:
-        await message.reply(text=TITLE_ERROR, reply_markup=cancel_keyboard)
-        await delete_last_message(bot, state, message)
-        return
+    if validate_title(title):
+        text = (
+            "Сделать заметку публичной (для всех в путешествии) "
+            "или приватной (только для вас)?"
+        )
+        keyboard = choose_status_keyboard
+        await state.update_data(title=title)
+    else:
+        text = TITLE_ERROR
+        keyboard = cancel_keyboard
 
-    text = (
-        "Сделать заметку публичной (для всех в путешествии) "
-        "или приватной (только для вас)?"
-    )
-    bot_msg = await message.answer(text=text, reply_markup=choose_status_keyboard)
+    bot_msg = await message.answer(text=text, reply_markup=keyboard)
 
     await delete_last_message(bot, state, message)
-    await state.update_data(title=title, last_id=bot_msg.message_id)
+    await state.update_data(last_id=bot_msg.message_id)
     await state.set_state(NoteCreating.status)
 
 

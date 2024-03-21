@@ -31,7 +31,9 @@ class LocationAlchemyRepo(LocationRepo, BaseAlchemyRepo):
         instance: Location | LocationExtended,
     ) -> LocationExtended:
         instance.id = id
-        model = LocationModel(**instance.model_dump(exclude={"travel"}))
+        model = LocationModel(
+            **instance.model_dump(exclude={"travel", "city", "country"})
+        )
         await self.session.merge(model)
         await self.session.commit()
 

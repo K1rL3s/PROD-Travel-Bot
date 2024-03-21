@@ -6,7 +6,7 @@ from bot.callbacks import InStateData, OpenMenu, ProfileData
 from bot.keyboards import edit_profile_keyboard
 from bot.utils.enums import Action, BotMenu, SlashCommand
 from bot.utils.states import ProfileState
-from core.models import User
+from core.models import UserExtended
 
 from .funcs import format_user_profile
 
@@ -21,7 +21,7 @@ router = Router(name=__name__)
 )
 async def check_my_profile_callback(
     callback: CallbackQuery,
-    user: User,
+    user: UserExtended,
 ) -> None:
     await callback.message.edit_text(
         text=format_user_profile(user),
@@ -32,7 +32,7 @@ async def check_my_profile_callback(
 @router.message(Command(SlashCommand.PROFILE))
 async def check_my_profile_message(
     message: Message,
-    user: User,
+    user: UserExtended,
 ) -> None:
     await message.answer(
         text=format_user_profile(user),

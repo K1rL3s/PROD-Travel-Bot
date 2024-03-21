@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 
 
 class FieldInState(BaseFilter):
-    def __init__(self, field_value: str, field_key: str = "field") -> None:
+    def __init__(self, field_value: Any, field_key: str = "field") -> None:
         self.field_value = field_value
         self.field_key = field_key
 

@@ -27,9 +27,9 @@ class NoteAlchemyRepo(NoteRepo, BaseAlchemyRepo):
         model = await self.session.scalar(query)
         return NoteExtended.model_validate(model) if model else None
 
-    async def update(self, id: int, instance: Note) -> NoteExtended:
+    async def update(self, id: int, instance: Note | NoteExtended) -> NoteExtended:
         instance.id = id
-        model = NoteModel(**instance.model_dump(exclude={"travel"}))
+        model = NoteModel(**instance.model_dump(exclude={"travel", "creator"}))
         await self.session.merge(model)
         await self.session.commit()
 

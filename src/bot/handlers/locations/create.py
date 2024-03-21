@@ -104,13 +104,26 @@ async def country_entered(
     geo_service: GeoService,
     country: str,
 ) -> None:
-    country = validate_country(country) and await geo_service.normalize_country(country)
-    if country:
-        text = "Какой адрес этого места?"
-        await state.set_state(LocationCreating.address)
-        data = await state.update_data(country=country)
-        address = await geo_service.get_address(data["title"], data["city"], country)
-        keyboard = reply_keyboard_from_list([address]) if address else cancel_keyboard
+    if validate_country(country):
+        country = await geo_service.normalize_country(country)
+        data = await state.get_data()
+        city: str = data["city"]
+        countries = await geo_service.get_countries_by_city(city)
+        if country and country.lower() in (c.lower() for c in countries):
+            text = "Какой адрес этого места?"
+            await state.set_state(LocationCreating.address)
+            await state.update_data(country=country)
+            address = await geo_service.get_address(
+                data["title"],
+                data["city"],
+                country,
+            )
+            keyboard = (
+                reply_keyboard_from_list([address]) if address else cancel_keyboard
+            )
+        else:
+            text = COUNTRY_ERROR
+            keyboard = cancel_keyboard
     else:
         text = COUNTRY_ERROR
         keyboard = cancel_keyboard
@@ -167,6 +180,7 @@ async def end_at_entered(
     state: FSMContext,
     bot: Bot,
     location_service: LocationService,
+    geo_service: GeoService,
     end_at: str,
 ) -> None:
     if not validate_end_at(end_at):
@@ -177,17 +191,20 @@ async def end_at_entered(
         return
 
     data = await state.get_data()
+    country = await geo_service.create_or_get_country(data["country"])
+    city = await geo_service.create_or_get_city(data["city"], country.title)
 
     location = Location(
         travel_id=data["travel_id"],
         title=html_quote(data["title"]),
-        city=html_quote(data["city"]),
-        country=html_quote(data["country"]),
+        city_id=city.id,
+        country_id=country.id,
         address=html_quote(data["address"]),
         start_at=datetime.utcnow(),  # !!
         end_at=datetime.utcnow(),  # !!
     )
     location_ext = await location_service.create(location)
+
     await message.answer(
         text=format_location(location_ext),
         reply_markup=one_location_keyboard(
@@ -196,6 +213,5 @@ async def end_at_entered(
             page=data["page"],
         ),
     )
-
     await delete_last_message(bot, state, message)
     await state.clear()

@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Any
 from uuid import uuid4
 
@@ -9,28 +10,28 @@ from bot.filters.access import CallbackAccess, StateAccess
 from core.models import NoteExtended
 
 
-def _check_callback_data(callback_data: Any) -> int | None:
-    if hasattr(callback_data, "note_id") and isinstance(callback_data.note_id, int):
-        return callback_data.note_id
-    return None
+class NoteCallbackBase(CallbackAccess[NoteExtended, int], ABC):
+    @staticmethod
+    def _check_callback_data(callback_data: Any) -> int | None:
+        if hasattr(callback_data, "note_id") and isinstance(callback_data.note_id, int):
+            return callback_data.note_id
+        return None
 
 
-class NoteCallbackAccess(CallbackAccess[NoteExtended, int]):
+class NoteCallbackAccess(NoteCallbackBase):
     def __init__(self) -> None:
         super().__init__(
             service_context_var="note_service",
             add_context_var="note",
-            callback_data_checker=_check_callback_data,
             owner_mode=False,
         )
 
 
-class NoteCallbackOwner(CallbackAccess[NoteExtended, int]):
+class NoteCallbackOwner(NoteCallbackBase):
     def __init__(self) -> None:
         super().__init__(
             service_context_var="note_service",
             add_context_var="note",
-            callback_data_checker=_check_callback_data,
             owner_mode=True,
         )
 

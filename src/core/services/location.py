@@ -1,12 +1,9 @@
 from typing import Callable, TypeVar
 
 from core.models import Location, LocationExtended
-from core.models.location import (
-    MAX_LOCATION_ADDRESS_LENGTH,
-    MAX_LOCATION_CITY_LENGTH,
-    MAX_LOCATION_COUNTRY_LENGTH,
-    MAX_LOCATION_TITLE_LENGTH,
-)
+from core.models.city import MAX_CITY_LENGTH
+from core.models.country import MAX_COUNTRY_LENGTH
+from core.models.location import MAX_LOCATION_ADDRESS_LENGTH, MAX_LOCATION_TITLE_LENGTH
 from core.repositories import LocationRepo, TravelRepo
 from core.utils.enums import LocationField
 
@@ -81,11 +78,11 @@ def validate_title(title: str) -> bool:
 
 
 def validate_city(city: str) -> bool:
-    return 0 < len(city) <= MAX_LOCATION_CITY_LENGTH
+    return 0 < len(city) <= MAX_CITY_LENGTH
 
 
 def validate_country(country: str) -> bool:
-    return 0 < len(country) <= MAX_LOCATION_COUNTRY_LENGTH
+    return 0 < len(country) <= MAX_COUNTRY_LENGTH
 
 
 def validate_address(address: str) -> bool:

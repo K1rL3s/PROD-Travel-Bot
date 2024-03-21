@@ -1,6 +1,7 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing_extensions import TYPE_CHECKING
 
 from core.models.travel import MAX_TRAVEL_DESCRIPTION_LENGTH, MAX_TRAVEL_TITLE_LENGTH
 from database.models.base import AlchemyBaseModel
@@ -20,6 +21,7 @@ class TravelModel(AlchemyBaseModel):
         nullable=False,
     )
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+
     title: Mapped[str] = mapped_column(
         String(MAX_TRAVEL_TITLE_LENGTH),
         nullable=False,
@@ -33,4 +35,5 @@ class TravelModel(AlchemyBaseModel):
     owner: Mapped[list["UserModel"]] = relationship(
         "UserModel",
         lazy="joined",
+        cascade="save-update, merge, delete",
     )

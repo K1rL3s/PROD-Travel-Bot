@@ -77,10 +77,7 @@ class NoteService:
         if note is None:
             return None
 
-        note.is_public = not note.is_public
-        instanse = Note(**note.model_dump(exclude={"creator", "travel"}))
-
-        await self.note_repo.update(note.id, instanse)
+        await self.note_repo.update(note.id, note)
 
         return note
 

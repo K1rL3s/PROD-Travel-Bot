@@ -5,7 +5,20 @@ from core.geo.point import GeoPoint
 
 
 class GeoLocation(ABC):
-    __slots__ = ("_address", "_point", "_tuple", "_raw")
+    @property
+    @abstractmethod
+    def local_title(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
+    def country_title(self) -> str | None:
+        pass
+
+    @property
+    @abstractmethod
+    def country_code(self) -> str | None:
+        pass
 
     @property
     @abstractmethod
@@ -63,4 +76,4 @@ class GeoLocation(ABC):
 
     @abstractmethod
     def __len__(self) -> int:
-        return len(self._tuple)
+        return len(self._tuple)  # type: ignore

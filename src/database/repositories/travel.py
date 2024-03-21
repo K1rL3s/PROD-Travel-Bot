@@ -4,7 +4,13 @@ from sqlalchemy import delete, or_, select
 
 from core.models import Travel, TravelExtended
 from core.repositories import TravelRepo
-from database.models import LocationModel, NoteModel, TravelModel, UsersToTravels
+from database.models import (
+    InviteLinkModel,
+    LocationModel,
+    NoteModel,
+    TravelModel,
+    UsersToTravels,
+)
 from database.repositories.base import BaseAlchemyRepo
 
 
@@ -25,9 +31,11 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
         members_query = delete(UsersToTravels).where(UsersToTravels.travel_id == id)
         locations_query = delete(LocationModel).where(LocationModel.travel_id == id)
         notes_query = delete(NoteModel).where(NoteModel.travel_id == id)
+        links_query = delete(InviteLinkModel).where(InviteLinkModel.travel_id == id)
         await self.session.execute(members_query)
         await self.session.execute(locations_query)
         await self.session.execute(notes_query)
+        await self.session.execute(links_query)
         await self.session.flush()
 
         travel_query = delete(TravelModel).where(TravelModel.id == id)
@@ -45,7 +53,9 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
         return TravelExtended.model_validate(model) if model else None
 
     async def update(
-        self, id: int, instance: Travel | TravelExtended
+        self,
+        id: int,
+        instance: Travel | TravelExtended,
     ) -> TravelExtended:
         instance.id = id
         model = TravelModel(**instance.model_dump(exclude={"owner"}))
