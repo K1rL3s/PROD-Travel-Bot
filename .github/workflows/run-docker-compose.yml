@@ -1,0 +1,12 @@
+name: run-docker-compose
+run-name: Run application via docker compose
+on: [push]
+jobs:
+  docker-compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5 # You can change it
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run application via docker compose
+        run: docker compose up
+        shell: bash
