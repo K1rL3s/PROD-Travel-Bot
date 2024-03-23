@@ -1,5 +1,6 @@
 from geopy import Location as _Location
 from geopy import Nominatim
+from geopy.exc import GeocoderServiceError
 
 from core.geo import GeoLocation, GeoLocator
 from geo.location import GeoPyLocation
@@ -14,7 +15,10 @@ class GeoPyLocator(Nominatim, GeoLocator):
         query,
         **kwargs,
     ) -> GeoLocation | list[GeoLocation] | None:
-        result = await super().geocode(query, **kwargs)
+        try:
+            result = await super().geocode(query, **kwargs)
+        except GeocoderServiceError:
+            return None
         if isinstance(result, _Location):
             return GeoPyLocation(result)
         if isinstance(result, list) and all(isinstance(el, _Location) for el in result):

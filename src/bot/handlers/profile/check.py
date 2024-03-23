@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message
 from bot.callbacks import InStateData, OpenMenu, ProfileData
 from bot.keyboards import edit_profile_keyboard
 from bot.utils.enums import Action, BotMenu, SlashCommand
-from bot.utils.format import format_user_profile
+from bot.utils.format import format_user
 from bot.utils.states import ProfileState
 from core.models import UserExtended
 
@@ -23,7 +23,7 @@ async def check_my_profile_callback(
     user: UserExtended,
 ) -> None:
     await callback.message.edit_text(
-        text=format_user_profile(user),
+        text=format_user(user),
         reply_markup=edit_profile_keyboard,
     )
 
@@ -34,6 +34,6 @@ async def check_my_profile_message(
     user: UserExtended,
 ) -> None:
     await message.answer(
-        text=format_user_profile(user),
+        text=format_user(user),
         reply_markup=edit_profile_keyboard,
     )

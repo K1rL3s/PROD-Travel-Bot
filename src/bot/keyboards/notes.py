@@ -56,13 +56,13 @@ async def notes_keyboard(
         for note in await note_service.list_with_access_check(tg_id, travel_id)
     ]
 
-    create_note_button = InlineKeyboardButton(
-        text=f"{ADD} Добавить заметку",
-        callback_data=AddNoteData(page=page, travel_id=travel_id).pack(),
-    )
     open_travel_button = InlineKeyboardButton(
         text=f"{TRAVEL} Путешествие",
         callback_data=GetTravelData(travel_id=travel_id).pack(),
+    )
+    create_note_button = InlineKeyboardButton(
+        text=f"{ADD} Добавить заметку",
+        callback_data=AddNoteData(page=page, travel_id=travel_id).pack(),
     )
 
     return paginate_keyboard(
@@ -71,7 +71,7 @@ async def notes_keyboard(
         page=page,
         rows=rows,
         width=width,
-        additional_buttons=[create_note_button, open_travel_button],
+        additional_buttons=[open_travel_button, create_note_button],
         fabric=NotesPaginator,
         travel_id=travel_id,
     )
@@ -106,7 +106,7 @@ def one_note_keyboard(
 
     builder.row(
         InlineKeyboardButton(
-            text=f"{BACK} Назад",
+            text=f"{BACK} Все заметки",
             callback_data=NotesPaginator(page=page, travel_id=travel.id).pack(),
         )
     )

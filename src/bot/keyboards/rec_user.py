@@ -63,19 +63,18 @@ def one_recommend_user_keyboard(
 
     builder.row(
         InlineKeyboardButton(
+            text=f"{BACK} Все рекомендации",
+            callback_data=RecommendPaginator(page=page, travel_id=travel_id).pack(),
+        )
+    )
+    builder.row(
+        InlineKeyboardButton(
             text=f"{INVITE} Пригласить",
             callback_data=AddRecommendUser(
                 user_id=recommend_user_id,
                 travel_id=travel_id,
                 page=page,
             ).pack(),
-        )
-    )
-
-    builder.row(
-        InlineKeyboardButton(
-            text=f"{BACK} Назад",
-            callback_data=RecommendPaginator(page=page, travel_id=travel_id).pack(),
         )
     )
 

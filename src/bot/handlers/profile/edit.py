@@ -10,7 +10,7 @@ from bot.keyboards import (
     reply_keyboard_from_list,
 )
 from bot.utils.enums import Action
-from bot.utils.format import format_user_profile
+from bot.utils.format import format_user
 from bot.utils.html import html_quote
 from bot.utils.states import ProfileState
 from bot.utils.tg import delete_last_message
@@ -30,7 +30,7 @@ router = Router(name=__name__)
     ProfileState.editing,
 )
 async def edit_profile(callback: CallbackQuery, user: UserExtended) -> None:
-    text = "Что вы хотите изменить?\n\n" + format_user_profile(user)
+    text = "Что вы хотите изменить?\n\n" + format_user(user)
     keyboard = edit_profile_fields_keyboard
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -79,7 +79,7 @@ async def field_entered(
     setattr(user, edit_field, html_quote(answer))
     await user_service.update(user.id, user)
     await message.answer(
-        text=format_user_profile(user),
+        text=format_user(user),
         reply_markup=edit_profile_fields_keyboard,
     )
     await delete_last_message(bot, state, message)
@@ -162,7 +162,7 @@ async def country_enter(
             user.city_id = city.id
             user = await user_service.update(user.id, user)
 
-            text = format_user_profile(user)
+            text = format_user(user)
             keyboard = edit_profile_fields_keyboard
             await state.clear()
             await state.set_data({"last_id": last_id})

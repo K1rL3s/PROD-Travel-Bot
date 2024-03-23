@@ -13,11 +13,37 @@ from bot.callbacks import (
     RecommendPaginator,
 )
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, GET, LOCATION, MEMBER, NOTE
+from bot.keyboards.universal import (
+    ADD,
+    BACK,
+    DELETE,
+    EDIT,
+    GET,
+    LOCATION,
+    MEMBER,
+    NOTE,
+    TRAVEL,
+)
 from bot.utils.enums import BotMenu
 from core.models import Travel
 from core.services import TravelService
 from core.utils.enums import TravelField
+
+MY_TRAVEL = "🔵"
+NOT_MY_TRAVEL = "🟣"
+
+
+def check_joined_travel(travel_id: int, travel_title) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=f"{TRAVEL} {travel_title}",
+                    callback_data=GetTravelData(travel_id=travel_id).pack(),
+                )
+            ]
+        ]
+    )
 
 
 def back_to_travels_keyboard(page: int | None = 0) -> InlineKeyboardMarkup:
@@ -41,7 +67,9 @@ async def travels_keyboard(
     rows, width = 6, 1
     subjects = [
         InlineKeyboardButton(
-            text=travel.title,
+            text=(MY_TRAVEL if travel.owner_id == tg_id else NOT_MY_TRAVEL)
+            + " "
+            + travel.title,
             callback_data=GetTravelData(travel_id=travel.id, page=page).pack(),
         )
         for travel in await travel_service.list_by_tg_id(tg_id)
@@ -99,18 +127,20 @@ def one_travel_keyboard(
                     sure=False,
                 ).pack(),
             ),
+        )
+        builder.row(
             InlineKeyboardButton(
                 text=f"{GET} Найти путешественников",
                 callback_data=RecommendPaginator(
                     travel_id=travel.id,
-                    page=page,
+                    page=page or 0,
                 ).pack(),
             ),
         )
 
     builder.row(
         InlineKeyboardButton(
-            text=f"{BACK} Назад",
+            text=f"{BACK} Все путешествия",
             callback_data=OpenMenu(menu=BotMenu.TRAVELS, page=page).pack(),
         )
     )
@@ -123,20 +153,20 @@ def delete_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text=f"{DELETE} Удалить",
-                    callback_data=DeleteTravelData(
+                    text=f"{BACK} Назад",
+                    callback_data=GetTravelData(
                         travel_id=travel_id,
                         page=page,
-                        sure=True,
                     ).pack(),
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text=f"{BACK} Назад",
-                    callback_data=GetTravelData(
+                    text=f"{DELETE} Удалить",
+                    callback_data=DeleteTravelData(
                         travel_id=travel_id,
                         page=page,
+                        sure=True,
                     ).pack(),
                 )
             ],

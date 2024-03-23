@@ -47,7 +47,6 @@ for field in (
     LocationField.TITLE,
     LocationField.ADDRESS,
     LocationField.START_AT,
-    LocationField.END_AT,
 ):
 
     @router.callback_query(

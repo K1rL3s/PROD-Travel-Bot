@@ -93,10 +93,6 @@ def validate_start_at(start_at: str) -> bool:
     return True
 
 
-def validate_end_at(end_at: str) -> bool:
-    return True
-
-
 def get_location_field_validator(
     field: str,
 ) -> Callable[[str], bool]:
@@ -110,6 +106,4 @@ def get_location_field_validator(
         return validate_address
     if field == LocationField.START_AT:
         return validate_start_at
-    if field == LocationField.END_AT:
-        return validate_end_at
     raise ValueError("Unknown field")

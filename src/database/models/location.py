@@ -41,7 +41,6 @@ class LocationModel(AlchemyBaseModel):
         nullable=False,
     )
     start_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    end_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     travel: Mapped["TravelModel"] = relationship(
         "TravelModel",

@@ -84,16 +84,22 @@ def one_member_keyboard(
 
     builder.row(
         InlineKeyboardButton(
-            text=f"{BACK} Назад",
+            text=f"{BACK} Все друзья",
             callback_data=MembersPaginator(page=page, travel_id=travel.id).pack(),
-        )
+        ),
+        InlineKeyboardButton(
+            text=f"{TRAVEL} Путешествие",
+            callback_data=GetTravelData(page=0, travel_id=travel.id).pack(),
+        ),
     )
 
     return builder.as_markup()
 
 
 def delete_member_keyboard(
-    travel_id: int, member_id: int, page: int
+    travel_id: int,
+    member_id: int,
+    page: int,
 ) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[

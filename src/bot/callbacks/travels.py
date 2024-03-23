@@ -7,7 +7,7 @@ class GetTravelData(CallbackData, prefix="get_travel"):
 
 
 class AddTravelData(CallbackData, prefix="add_travel"):
-    page: int
+    page: int | None = None
 
 
 class EditTravelData(CallbackData, prefix="edit_travel"):

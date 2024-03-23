@@ -21,7 +21,6 @@ from core.services.location import (
     validate_address,
     validate_city,
     validate_country,
-    validate_end_at,
     validate_start_at,
 )
 
@@ -29,7 +28,11 @@ from .phrases import (
     ADDRESS_ERROR,
     CITY_ERROR,
     COUNTRY_ERROR,
-    END_AT_ERROR,
+    FILL_ADDRESS,
+    FILL_CITY,
+    FILL_COUNTRY,
+    FILL_START_AT,
+    FILL_TITLE,
     START_AT_ERROR,
 )
 
@@ -42,7 +45,7 @@ async def create_location(
     callback_data: AddLocationData,
     state: FSMContext,
 ) -> None:
-    text = "Как называется это место?"
+    text = FILL_TITLE
     await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
 
     await state.set_state(LocationCreating.title)
@@ -62,7 +65,7 @@ async def title_entered(
     bot: Bot,
     title: str,
 ) -> None:
-    text = "В каком городе это место?"
+    text = FILL_CITY
     bot_msg = await message.answer(text=text, reply_markup=cancel_keyboard)
 
     await delete_last_message(bot, state, message)
@@ -81,7 +84,7 @@ async def city_entered(
 ) -> None:
     city = validate_city(city) and await geo_service.normalize_city(city)
     if city:
-        text = "В какой стране это место?"
+        text = FILL_COUNTRY
         countries = await geo_service.get_countries_by_city(city)
         keyboard = reply_keyboard_from_list(countries)
         await state.set_state(LocationCreating.country)
@@ -110,7 +113,7 @@ async def country_entered(
         city: str = data["city"]
         countries = await geo_service.get_countries_by_city(city)
         if country and country.lower() in (c.lower() for c in countries):
-            text = "Какой адрес этого места?"
+            text = FILL_ADDRESS
             await state.set_state(LocationCreating.address)
             await state.update_data(country=country)
             address = await geo_service.get_address(
@@ -142,7 +145,7 @@ async def address_entered(
     address: str,
 ) -> None:
     if validate_address(address):
-        text = "В какую дату и во сколько вы хотите быть там?"
+        text = FILL_START_AT
         await state.set_state(LocationCreating.start_at)
         await state.update_data(address=address)
     else:
@@ -159,32 +162,12 @@ async def start_at_entered(
     message: Message,
     state: FSMContext,
     bot: Bot,
-    start_at: str,
-) -> None:
-    if validate_start_at(start_at):
-        text = "До какой даты и до сколько вы там будете?"
-        await state.set_state(LocationCreating.end_at)
-        await state.update_data(start_at=start_at)
-    else:
-        text = START_AT_ERROR
-
-    bot_msg = await message.answer(text=text, reply_markup=cancel_keyboard)
-
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
-
-
-@router.message(F.text.as_("end_at"), LocationCreating.end_at)
-async def end_at_entered(
-    message: Message,
-    state: FSMContext,
-    bot: Bot,
     location_service: LocationService,
     geo_service: GeoService,
-    end_at: str,
+    start_at: str,
 ) -> None:
-    if not validate_end_at(end_at):
-        text = END_AT_ERROR
+    if not validate_start_at(start_at):
+        text = START_AT_ERROR
         bot_msg = await message.answer(text=text, reply_markup=cancel_keyboard)
         await delete_last_message(bot, state, message)
         await state.update_data(last_id=bot_msg.message_id)
@@ -201,17 +184,16 @@ async def end_at_entered(
         country_id=country.id,
         address=html_quote(data["address"]),
         start_at=datetime.utcnow(),  # !!
-        end_at=datetime.utcnow(),  # !!
     )
     location_ext = await location_service.create(location)
 
-    await message.answer(
-        text=format_location(location_ext),
-        reply_markup=one_location_keyboard(
-            location_ext,
-            message.from_user.id,
-            page=data["page"],
-        ),
+    text = format_location(location_ext)
+    keyboard = one_location_keyboard(
+        location_ext,
+        message.from_user.id,
+        page=data["page"],
     )
+    await message.answer(text=text, reply_markup=keyboard)
+
     await delete_last_message(bot, state, message)
     await state.clear()

@@ -3,7 +3,11 @@ from typing import TYPE_CHECKING
 from sqlalchemy import BigInteger, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.models.user import MAX_USER_DESCRIPTION_LENGTH, MAX_USER_NAME_LENGTH
+from core.models.user import (
+    MAX_TG_NAME_LENGTH,
+    MAX_USER_DESCRIPTION_LENGTH,
+    MAX_USER_NAME_LENGTH,
+)
 from database.models.base import AlchemyBaseModel
 
 if TYPE_CHECKING:
@@ -31,6 +35,10 @@ class UserModel(AlchemyBaseModel):
     )
 
     name: Mapped[str] = mapped_column(String(MAX_USER_NAME_LENGTH), nullable=False)
+    tg_username: Mapped[str | None] = mapped_column(
+        String(MAX_TG_NAME_LENGTH),
+        nullable=True,
+    )
     age: Mapped[int] = mapped_column(Integer, nullable=False)
     description: Mapped[str | None] = mapped_column(
         String(MAX_USER_DESCRIPTION_LENGTH),

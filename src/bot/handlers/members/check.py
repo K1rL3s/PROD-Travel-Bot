@@ -5,7 +5,7 @@ from bot.callbacks import GetMemberData, MembersPaginator
 from bot.filters import MemberCallbackDI, TravelCallbackAccess
 from bot.keyboards import members_keyboard, one_member_keyboard
 from bot.utils.format import format_member
-from core.models import TravelExtended, User
+from core.models import TravelExtended, UserExtended
 from core.services import MemberService
 
 router = Router(name=__name__)
@@ -36,7 +36,7 @@ async def members_paginator(
 async def one_note(
     callback: CallbackQuery,
     callback_data: GetMemberData,
-    member: User,
+    member: UserExtended,
     travel: TravelExtended,
 ) -> None:
     text = format_member(member)

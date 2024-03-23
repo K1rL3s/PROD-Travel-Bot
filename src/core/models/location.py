@@ -16,7 +16,6 @@ class Location(BasePydanticModel):
     city_id: int
     address: str
     start_at: datetime
-    end_at: datetime
 
 
 class LocationExtended(Location):

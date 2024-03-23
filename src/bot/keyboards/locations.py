@@ -98,7 +98,7 @@ def one_location_keyboard(
 
     builder.row(
         InlineKeyboardButton(
-            text=f"{BACK} Назад",
+            text=f"{BACK} Все локации",
             callback_data=LocationsPaginator(
                 page=page,
                 travel_id=location.travel_id,
@@ -117,7 +117,6 @@ def edit_location_keyboard(location_id: int, page: int):
         ("3️⃣ Город", LocationField.CITY),
         ("4️⃣ Адрес", LocationField.ADDRESS),
         ("5️⃣ Время начала", LocationField.START_AT),
-        ("6️⃣ Время конца", LocationField.END_AT),
     ):
         builder.button(
             text=field_name,
@@ -128,7 +127,7 @@ def edit_location_keyboard(location_id: int, page: int):
             ),
         )
     builder.button(
-        text=f"{BACK} Назад",
+        text=f"{BACK} Локация",
         callback_data=GetLocationData(location_id=location_id, page=page),
     )
     return builder.adjust(1, repeat=True).as_markup()
@@ -149,7 +148,7 @@ def delete_location_keyboard(location_id: int, page: int) -> InlineKeyboardMarku
             ],
             [
                 InlineKeyboardButton(
-                    text=f"{BACK} Назад",
+                    text=f"{BACK} Локация",
                     callback_data=GetLocationData(
                         location_id=location_id,
                         page=page,

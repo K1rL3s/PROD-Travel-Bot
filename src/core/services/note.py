@@ -19,7 +19,7 @@ class NoteService:
             return False
         if (
             not await self.travel_repo.is_has_access(tg_id, note.travel_id)
-            or tg_id != note.travel.owner_id
+            and tg_id != note.travel.owner_id
         ):
             return False
         return True
