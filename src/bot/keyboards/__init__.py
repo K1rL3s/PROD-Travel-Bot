@@ -7,6 +7,7 @@ from .locations import (
 from .members import delete_member_keyboard, members_keyboard, one_member_keyboard
 from .notes import choose_status_keyboard, notes_keyboard, one_note_keyboard
 from .profile import edit_profile_fields_keyboard, edit_profile_keyboard
+from .rec_user import one_recommend_user_keyboard, recommend_users_keyboard
 from .start import fill_profile_keyboard, start_keyboard
 from .travels import (
     back_to_travels_keyboard,
@@ -40,4 +41,6 @@ __all__ = (
     "reply_keyboard_from_list",
     "start_keyboard",
     "travels_keyboard",
+    "recommend_users_keyboard",
+    "one_recommend_user_keyboard",
 )

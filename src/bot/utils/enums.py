@@ -26,6 +26,7 @@ class BotMenu(StrEnum):
     LOCATIONS = "locations"
     NOTES = "notes"
     MEMBERS = "members"
+    RECOMMEND_USERS = "recommend_users"
 
 
 class Action(StrEnum):

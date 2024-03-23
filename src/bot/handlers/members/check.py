@@ -4,10 +4,9 @@ from aiogram.types import CallbackQuery
 from bot.callbacks import GetMemberData, MembersPaginator
 from bot.filters import MemberCallbackDI, TravelCallbackAccess
 from bot.keyboards import members_keyboard, one_member_keyboard
+from bot.utils.format import format_member
 from core.models import TravelExtended, User
 from core.services import MemberService
-
-from .funcs import format_member
 
 router = Router(name=__name__)
 

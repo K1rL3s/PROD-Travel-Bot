@@ -11,6 +11,7 @@ from bot.keyboards import (
     one_location_keyboard,
     reply_keyboard_from_list,
 )
+from bot.utils.format import format_location
 from bot.utils.html import html_quote
 from bot.utils.states import LocationCreating
 from bot.utils.tg import delete_last_message
@@ -24,7 +25,6 @@ from core.services.location import (
     validate_start_at,
 )
 
-from .funcs import format_location
 from .phrases import (
     ADDRESS_ERROR,
     CITY_ERROR,

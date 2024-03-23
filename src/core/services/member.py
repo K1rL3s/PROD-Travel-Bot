@@ -1,7 +1,13 @@
 from typing import cast
 from uuid import UUID
 
-from core.models import InviteLink, InviteLinkExtended, TravelExtended, User
+from core.models import (
+    InviteLink,
+    InviteLinkExtended,
+    TravelExtended,
+    User,
+    UserExtended,
+)
 from core.repositories import InviteLinkRepo, TravelRepo
 from core.repositories.member import MemberRepo
 from core.services.base import BaseService
@@ -62,3 +68,13 @@ class MemberService(BaseService):
             return None
 
         return await self.invite_link_repo.create(InviteLink(travel_id=travel_id))
+
+    async def get_recommended_users_with_access_check(
+        self,
+        tg_id: int,
+        travel_id: int,
+    ) -> list[UserExtended]:
+        if not await self.travel_repo.is_has_access(tg_id, travel_id):
+            return []
+
+        return await self.member_repo.recommended_travelers(travel_id)

@@ -6,10 +6,9 @@ from bot.callbacks import GetTravelData, OpenMenu, Paginator
 from bot.filters import TravelCallbackAccess
 from bot.keyboards import one_travel_keyboard, travels_keyboard
 from bot.utils.enums import BotMenu, SlashCommand
+from bot.utils.format import format_travel
 from core.models import TravelExtended
 from core.services import TravelService
-
-from .funcs import format_travel
 
 router = Router(name=__name__)
 

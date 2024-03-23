@@ -4,7 +4,6 @@ from aiogram.filters import BaseFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
-from core.repositories import UserRepo
 from core.services.user import UserService
 
 
@@ -25,9 +24,9 @@ class MemberCallbackDI(BaseFilter):
         if member_id is None:
             return False
 
-        service: UserService = kwargs["user_service"]
+        user_service: UserService = kwargs["user_service"]
 
-        member = await service.get(member_id)
+        member = await user_service.get(member_id)
         if member:
             return {"member": member}
         return False
@@ -46,9 +45,9 @@ class MemberStateDI(BaseFilter):
         if member_id is None:
             return False
 
-        repo: UserRepo = kwargs["user_repo"]
+        user_service: UserService = kwargs["user_service"]
 
-        member = await repo.get(member_id)
+        member = await user_service.get(member_id)
         if member:
             return {"member": member}
         return False

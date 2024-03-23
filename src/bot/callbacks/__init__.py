@@ -17,6 +17,7 @@ from .notes import (
 )
 from .paginate import Paginator
 from .profile import EditProfileData, ProfileData
+from .rec_user import AddRecommendUser, GetRecommendUser, RecommendPaginator
 from .state import InStateData
 from .travels import AddTravelData, DeleteTravelData, EditTravelData, GetTravelData
 
@@ -45,4 +46,7 @@ __all__ = (
     "Paginator",
     "ProfileData",
     "SwitchNoteData",
+    "GetRecommendUser",
+    "RecommendPaginator",
+    "AddRecommendUser",
 )

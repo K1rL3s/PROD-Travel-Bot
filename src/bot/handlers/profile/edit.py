@@ -10,6 +10,7 @@ from bot.keyboards import (
     reply_keyboard_from_list,
 )
 from bot.utils.enums import Action
+from bot.utils.format import format_user_profile
 from bot.utils.html import html_quote
 from bot.utils.states import ProfileState
 from bot.utils.tg import delete_last_message
@@ -18,7 +19,6 @@ from core.services import GeoService, UserService
 from core.services.user import get_user_field_validator, validate_city, validate_country
 from core.utils.enums import ProfileField
 
-from .funcs import format_user_profile
 from .phrases import CITY_ERROR, COUNTRY_ERROR, error_text_by_field
 
 router = Router(name=__name__)

@@ -6,10 +6,9 @@ from aiogram.types import CallbackQuery
 from bot.callbacks import AddMemberData
 from bot.filters import TravelCallbackOwner
 from bot.keyboards import members_keyboard
+from bot.utils.format import format_invite_link
 from core.models import InviteLinkExtended, TravelExtended
 from core.services import MemberService
-
-from .funcs import format_invite_link
 
 router = Router(name=__name__)
 

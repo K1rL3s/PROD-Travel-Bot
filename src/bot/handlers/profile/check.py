@@ -5,10 +5,9 @@ from aiogram.types import CallbackQuery, Message
 from bot.callbacks import InStateData, OpenMenu, ProfileData
 from bot.keyboards import edit_profile_keyboard
 from bot.utils.enums import Action, BotMenu, SlashCommand
+from bot.utils.format import format_user_profile
 from bot.utils.states import ProfileState
 from core.models import UserExtended
-
-from .funcs import format_user_profile
 
 router = Router(name=__name__)
 

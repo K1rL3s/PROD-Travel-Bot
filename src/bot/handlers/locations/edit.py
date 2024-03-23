@@ -11,6 +11,7 @@ from bot.keyboards import (
     edit_location_keyboard,
     reply_keyboard_from_list,
 )
+from bot.utils.format import format_location
 from bot.utils.html import html_quote
 from bot.utils.states import LocationState
 from bot.utils.tg import delete_last_message
@@ -23,7 +24,6 @@ from core.services.location import (
 )
 from core.utils.enums import LocationField
 
-from .funcs import format_location
 from .phrases import CITY_ERROR, COUNTRY_ERROR, error_text_by_field
 
 router = Router(name=__name__)

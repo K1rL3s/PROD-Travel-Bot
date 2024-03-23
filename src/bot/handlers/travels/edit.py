@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery, Message
 from bot.callbacks import EditTravelData, GetTravelData
 from bot.filters import TravelCallbackOwner, TravelStateOwner
 from bot.keyboards import back_cancel_keyboard, edit_travel_keyboard
+from bot.utils.format import format_travel
 from bot.utils.html import html_quote
 from bot.utils.states import TravelState
 from bot.utils.tg import delete_last_message
@@ -12,7 +13,6 @@ from core.models import TravelExtended, User
 from core.services import TravelService, get_travel_field_validator
 from core.utils.enums import TravelField
 
-from .funcs import format_travel
 from .phrases import error_text_by_field
 
 router = Router(name=__name__)

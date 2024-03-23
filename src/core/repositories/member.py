@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, NoReturn
 
-from core.models import User
+from core.models import User, UserExtended
 from core.repositories.abc_meta import RepoMeta
 
 
@@ -29,6 +29,15 @@ class MemberRepo(RepoMeta[User, User, int], ABC):
         member_id: int,
         travel_id: int,
     ) -> None:
+        pass
+
+    @abstractmethod
+    async def recommended_travelers(
+        self,
+        travel_id: int,
+        limit: int | None = None,
+        offset: int = 0,
+    ) -> list[UserExtended]:
         pass
 
     async def create(self, instance: Any) -> NoReturn:

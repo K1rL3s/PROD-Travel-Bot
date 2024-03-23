@@ -18,6 +18,7 @@ class InviteLinkAlchemyRepo(InviteLinkRepo, BaseAlchemyRepo):
     async def delete(self, id: UUID) -> None:
         query = delete(InviteLinkModel).where(InviteLinkModel.id == id)
         await self.session.execute(query)
+        await self.session.commit()
 
     async def get(self, id: UUID) -> InviteLinkExtended | None:
         query = select(InviteLinkModel).where(InviteLinkModel.id == id)

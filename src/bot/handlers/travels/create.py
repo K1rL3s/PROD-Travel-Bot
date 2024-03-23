@@ -10,13 +10,13 @@ from bot.callbacks import InStateData
 from bot.handlers.base_scene import BaseScene
 from bot.keyboards import back_cancel_keyboard, one_travel_keyboard, travels_keyboard
 from bot.utils.enums import Action
+from bot.utils.format import format_travel
 from bot.utils.html import html_quote
 from bot.utils.tg import delete_last_message
 from core.models import Travel
 from core.services import TravelService, get_travel_field_validator
 from core.utils.enums import TravelField
 
-from .funcs import format_travel
 from .phrases import error_text_by_field
 
 T = TypeVar("T")

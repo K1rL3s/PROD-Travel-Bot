@@ -10,9 +10,10 @@ from bot.callbacks import (
     MembersPaginator,
     NotesPaginator,
     OpenMenu,
+    RecommendPaginator,
 )
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, LOCATION, MEMBER, NOTE
+from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, GET, LOCATION, MEMBER, NOTE
 from bot.utils.enums import BotMenu
 from core.models import Travel
 from core.services import TravelService
@@ -96,6 +97,13 @@ def one_travel_keyboard(
                     travel_id=travel.id,
                     page=page,
                     sure=False,
+                ).pack(),
+            ),
+            InlineKeyboardButton(
+                text=f"{GET} Найти путешественников",
+                callback_data=RecommendPaginator(
+                    travel_id=travel.id,
+                    page=page,
                 ).pack(),
             ),
         )
