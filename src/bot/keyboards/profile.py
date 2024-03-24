@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.callbacks import EditProfileData, OpenMenu, Paginator, ProfileData
-from bot.keyboards.universal import BACK, EDIT, PROFILE, TRAVEL
+from bot.keyboards.emoji import BACK, EDIT, PROFILE, TRAVEL
 from bot.utils.enums import Action, BotMenu
 from core.utils.enums import ProfileField
 

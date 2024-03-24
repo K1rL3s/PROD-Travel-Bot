@@ -92,6 +92,7 @@ class TravelCreateScene(BaseScene, state="travel"):
         value, error = await self.step_answer_check(
             message.text,
             question.key,
+            message.from_user.id,
             travel_service,
         )
         if error:
@@ -150,15 +151,16 @@ class TravelCreateScene(BaseScene, state="travel"):
         self,
         answer: str,
         field: str,
+        tg_id: int,
         travel_service: TravelService,
     ) -> tuple[str | None, str | None]:
         validators: dict[
-            str, tuple[Callable[[TravelService, T], Awaitable[T | None]], str]
+            str, tuple[Callable[[TravelService, T, int], Awaitable[T | None]], str]
         ] = {
             field: (get_travel_field_validator(field), error_text_by_field[field])
             for field in TravelField.values()
         }
         validator, error_text = validators[field]
-        if (value := await validator(travel_service, answer)) is None:
+        if (value := await validator(travel_service, answer, tg_id)) is None:
             return None, error_text
         return value, None

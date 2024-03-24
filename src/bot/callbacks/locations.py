@@ -29,3 +29,8 @@ class DeleteLocationData(CallbackData, prefix="delete_location"):
     location_id: int
     page: int
     sure: bool = False
+
+
+class GetWeatherData(CallbackData, prefix="get_weather"):
+    location_id: int
+    page: int

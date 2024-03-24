@@ -5,6 +5,7 @@ from .location import Location, LocationExtended
 from .note import Note, NoteExtended
 from .travel import Travel, TravelExtended
 from .user import User, UserExtended
+from .weather import Weather
 
 __all__ = (
     "City",
@@ -21,4 +22,5 @@ __all__ = (
     "UserExtended",
     "InviteLink",
     "InviteLinkExtended",
+    "Weather",
 )

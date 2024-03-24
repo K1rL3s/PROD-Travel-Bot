@@ -39,7 +39,8 @@ router = Router(name=__name__)
 @router.callback_query(ProfileData.filter(F.action == Action.ADD))
 async def start_create_profile(callback: CallbackQuery, state: FSMContext) -> None:
     text = FILL_NAME
-    await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
+    await callback.message.answer(text=text, reply_markup=cancel_keyboard)
+    await state.clear()
     await state.set_state(ProfileCreating.name)
     await state.set_data({"last_id": callback.message.message_id})
 

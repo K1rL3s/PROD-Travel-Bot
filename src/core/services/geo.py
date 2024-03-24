@@ -1,6 +1,6 @@
 from typing import Any, cast
 
-from core.geo import GeoLocation, GeoLocator
+from core.geo import GeoLocation, GeoLocator, Timezoner
 from core.models import City, CityExtended, Country, CountryExtended
 from core.repositories import CityRepo, CountryRepo
 from core.services.base import BaseService
@@ -10,10 +10,12 @@ class GeoService(BaseService):
     def __init__(
         self,
         geolocator: GeoLocator,
+        timezoner: Timezoner,
         country_repo: CountryRepo,
         city_repo: CityRepo,
     ) -> None:
         self.geolocator = geolocator
+        self.timezoner = timezoner
         self.country_repo = country_repo
         self.city_repo = city_repo
         self.geo_kwargs = {
@@ -71,11 +73,17 @@ class GeoService(BaseService):
         if country is None:
             return None
 
+        timezone = await self.timezoner.get_timezone(
+            latitude=location.latitude,
+            longitude=location.longitude,
+        )
+
         city = City(
             title=location.local_title,
             country_id=country.id,
             latitude=location.latitude,
             longitude=location.longitude,
+            timezone=timezone,
         )
         return await self.city_repo.create(city)
 
@@ -107,9 +115,14 @@ class GeoService(BaseService):
             {location.country_title for location in locations if location.country_title}
         )
 
-    async def get_address(self, title: str, city: str, country: str) -> str | None:
-        location = cast(GeoLocation, await self.geocode(f"{title} {city} {country}"))
-        if not location:
-            return None
-
-        return location.address
+    async def get_address_location(
+        self,
+        title: str,
+        city: str,
+        country: str,
+    ) -> GeoLocation | None:
+        location = cast(
+            GeoLocation,
+            await self.geocode(f"{title} {city} {country}", exactly_one=True),
+        )
+        return location

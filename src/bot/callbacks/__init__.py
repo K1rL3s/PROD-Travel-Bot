@@ -3,6 +3,7 @@ from .locations import (
     DeleteLocationData,
     EditLocationData,
     GetLocationData,
+    GetWeatherData,
     LocationsPaginator,
 )
 from .members import AddMemberData, DeleteMemberData, GetMemberData, MembersPaginator
@@ -19,7 +20,13 @@ from .paginate import Paginator
 from .profile import EditProfileData, ProfileData
 from .rec_user import AddRecommendUser, GetRecommendUser, RecommendPaginator
 from .state import InStateData
-from .travels import AddTravelData, DeleteTravelData, EditTravelData, GetTravelData
+from .travels import (
+    AddTravelData,
+    DeleteTravelData,
+    EditTravelData,
+    GetRouteData,
+    GetTravelData,
+)
 
 __all__ = (
     "AddLocationData",
@@ -49,4 +56,6 @@ __all__ = (
     "GetRecommendUser",
     "RecommendPaginator",
     "AddRecommendUser",
+    "GetRouteData",
+    "GetWeatherData",
 )

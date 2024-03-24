@@ -6,7 +6,11 @@ from core.repositories.abc_meta import RepoMeta
 
 class TravelRepo(RepoMeta[Travel, TravelExtended, int], ABC):
     @abstractmethod
-    async def get_by_title(self, title: str) -> TravelExtended | None:
+    async def get_by_title_and_owner_id(
+        self,
+        title: str,
+        owner_id: int,
+    ) -> TravelExtended | None:
         pass
 
     @abstractmethod

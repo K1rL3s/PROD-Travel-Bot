@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -24,6 +22,7 @@ from core.services.location import (
     validate_start_at,
 )
 
+from ...utils.datehelp import datetime_by_format
 from .phrases import (
     ADDRESS_ERROR,
     CITY_ERROR,
@@ -116,13 +115,15 @@ async def country_entered(
             text = FILL_ADDRESS
             await state.set_state(LocationCreating.address)
             await state.update_data(country=country)
-            address = await geo_service.get_address(
+            address = await geo_service.get_address_location(
                 data["title"],
                 data["city"],
                 country,
             )
             keyboard = (
-                reply_keyboard_from_list([address]) if address else cancel_keyboard
+                reply_keyboard_from_list([address.address])
+                if address
+                else cancel_keyboard
             )
         else:
             text = COUNTRY_ERROR
@@ -176,6 +177,9 @@ async def start_at_entered(
     data = await state.get_data()
     country = await geo_service.create_or_get_country(data["country"])
     city = await geo_service.create_or_get_city(data["city"], country.title)
+    address = await geo_service.get_address_location(
+        data["title"], city.title, country.title
+    )
 
     location = Location(
         travel_id=data["travel_id"],
@@ -183,7 +187,9 @@ async def start_at_entered(
         city_id=city.id,
         country_id=country.id,
         address=html_quote(data["address"]),
-        start_at=datetime.utcnow(),  # !!
+        start_at=datetime_by_format(start_at),
+        latitude=address.latitude if address else city.latitude,
+        longitude=address.longitude if address else city.longitude,
     )
     location_ext = await location_service.create(location)
 

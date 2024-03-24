@@ -28,12 +28,19 @@ class BotSettings(BaseModel):
     token: str
 
 
+class APISettings(BaseModel):
+    """Ключ к апишками."""
+
+    open_weather_key: str
+
+
 class Settings(BaseModel):
     """Сборник настроек :)."""
 
     db: DBSettings
     redis: RedisSettings
     bot: BotSettings
+    api: APISettings
 
 
 @lru_cache
@@ -58,5 +65,6 @@ def get_settings() -> Settings:
     bot = BotSettings(
         token=os.environ["BOT_TOKEN"],
     )
+    api = APISettings(open_weather_key=os.environ["OPEN_WEATHER_KEY"])
 
-    return Settings(db=db, redis=redis, bot=bot)
+    return Settings(db=db, redis=redis, bot=bot, api=api)

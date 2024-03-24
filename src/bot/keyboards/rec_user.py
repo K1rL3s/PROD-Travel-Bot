@@ -7,8 +7,8 @@ from bot.callbacks import (
     GetTravelData,
     RecommendPaginator,
 )
+from bot.keyboards.emoji import BACK, INVITE, TRAVEL
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import BACK, INVITE, TRAVEL
 from bot.utils.enums import BotMenu
 from core.services import MemberService
 

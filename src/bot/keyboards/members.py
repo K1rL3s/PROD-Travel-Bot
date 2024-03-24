@@ -8,8 +8,8 @@ from bot.callbacks import (
     GetTravelData,
     MembersPaginator,
 )
+from bot.keyboards.emoji import ADD, BACK, DELETE, TRAVEL
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import ADD, BACK, DELETE, TRAVEL
 from bot.utils.enums import BotMenu
 from core.models import Travel, User
 from core.services import MemberService

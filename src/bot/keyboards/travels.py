@@ -5,6 +5,7 @@ from bot.callbacks import (
     AddTravelData,
     DeleteTravelData,
     EditTravelData,
+    GetRouteData,
     GetTravelData,
     LocationsPaginator,
     MembersPaginator,
@@ -12,8 +13,7 @@ from bot.callbacks import (
     OpenMenu,
     RecommendPaginator,
 )
-from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import (
+from bot.keyboards.emoji import (
     ADD,
     BACK,
     DELETE,
@@ -22,8 +22,10 @@ from bot.keyboards.universal import (
     LOCATION,
     MEMBER,
     NOTE,
+    ROUTE,
     TRAVEL,
 )
+from bot.keyboards.paginate import paginate_keyboard
 from bot.utils.enums import BotMenu
 from core.models import Travel
 from core.services import TravelService
@@ -40,6 +42,19 @@ def check_joined_travel(travel_id: int, travel_title) -> InlineKeyboardMarkup:
                 InlineKeyboardButton(
                     text=f"{TRAVEL} {travel_title}",
                     callback_data=GetTravelData(travel_id=travel_id).pack(),
+                )
+            ]
+        ]
+    )
+
+
+def back_to_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=f"{TRAVEL} Путешествие",
+                    callback_data=GetTravelData(travel_id=travel_id, page=page).pack(),
                 )
             ]
         ]
@@ -107,6 +122,10 @@ def one_travel_keyboard(
     builder.button(
         text=f"{MEMBER} Друзья",
         callback_data=MembersPaginator(page=0, travel_id=travel.id),
+    )
+    builder.button(
+        text=f"{ROUTE} Маршрут",
+        callback_data=GetRouteData(page=page, travel_id=travel.id),
     )
     builder.adjust(1, repeat=True)
 

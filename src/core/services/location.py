@@ -1,5 +1,6 @@
 from typing import Callable, TypeVar
 
+from bot.utils.datehelp import datetime_by_format
 from core.models import Location, LocationExtended
 from core.models.city import MAX_CITY_LENGTH
 from core.models.country import MAX_COUNTRY_LENGTH
@@ -90,7 +91,7 @@ def validate_address(address: str) -> bool:
 
 
 def validate_start_at(start_at: str) -> bool:
-    return True
+    return bool(datetime_by_format(start_at))
 
 
 def get_location_field_validator(

@@ -1,14 +1,14 @@
 from datetime import datetime
 
 from core.models import City, Country
-from core.models.base import BasePydanticModel
+from core.models.base import BaseCoreModel
 from core.models.travel import Travel
 
 MAX_LOCATION_TITLE_LENGTH = 1024
 MAX_LOCATION_ADDRESS_LENGTH = 512
 
 
-class Location(BasePydanticModel):
+class Location(BaseCoreModel):
     id: int | None = None
     travel_id: int
     title: str
@@ -16,6 +16,8 @@ class Location(BasePydanticModel):
     city_id: int
     address: str
     start_at: datetime
+    latitude: float
+    longitude: float
 
 
 class LocationExtended(Location):

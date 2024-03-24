@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from core.models.base import BasePydanticModel
+from core.models.base import BaseCoreModel
 from core.models.travel import Travel
 
 INVITE_LINK_ID_LENGTH = 36
@@ -9,7 +9,7 @@ INVITE_LINK_ID_REGEX = (
 )
 
 
-class InviteLink(BasePydanticModel):
+class InviteLink(BaseCoreModel):
     id: UUID | None = None
     travel_id: int
 

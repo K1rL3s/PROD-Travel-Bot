@@ -20,3 +20,8 @@ class DeleteTravelData(CallbackData, prefix="delete_travel"):
     travel_id: int
     page: int | None = None
     sure: bool = False
+
+
+class GetRouteData(CallbackData, prefix="get_router"):
+    travel_id: int
+    page: int | None = None

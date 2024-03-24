@@ -6,23 +6,8 @@ from aiogram.types import (
 )
 
 from bot.callbacks import InStateData, OpenMenu
+from bot.keyboards.emoji import BACK, NO, START
 from bot.utils.enums import Action, BotMenu
-
-YES = "✅"
-NO = "❌"
-BACK = "🔙"
-ADD = "➕"
-INVITE = "🕊️"
-EDIT = "✏️"
-GET = "🔍"
-DELETE = "🗑️"
-PROFILE = "📖"
-TRAVEL = "✈️"
-LOCATION = "🗽"
-NOTE = "📝"
-START = "🏠"
-MEMBER = "👫"
-
 
 back_button = InlineKeyboardButton(
     text=f"{BACK} Назад",

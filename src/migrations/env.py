@@ -1,6 +1,6 @@
 import asyncio
+import os
 from logging.config import fileConfig
-from pathlib import Path
 
 from alembic import context
 from alembic.script import ScriptDirectory
@@ -8,26 +8,19 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    load_dotenv = None
-
 from database.models import *  # noqa: F403
 from database.models.base import AlchemyBaseModel
-from settings import get_settings
 
 config = context.config
-if load_dotenv:
-    load_dotenv(Path(__file__).parent.parent.parent.resolve() / ".env")
-db_settings = get_settings().db
 
 section = config.config_ini_section
-config.set_section_option(section, "POSTGRES_HOST", db_settings.host)
-config.set_section_option(section, "POSTGRES_HOST_PORT", str(db_settings.host_port))
-config.set_section_option(section, "POSTGRES_DB", db_settings.db)
-config.set_section_option(section, "POSTGRES_USER", db_settings.user)
-config.set_section_option(section, "POSTGRES_PASSWORD", db_settings.password)
+config.set_section_option(section, "POSTGRES_HOST", os.environ["POSTGRES_HOST"])
+config.set_section_option(
+    section, "POSTGRES_HOST_PORT", os.environ["POSTGRES_HOST_PORT"]
+)
+config.set_section_option(section, "POSTGRES_DB", os.environ["POSTGRES_DB"])
+config.set_section_option(section, "POSTGRES_USER", os.environ["POSTGRES_USER"])
+config.set_section_option(section, "POSTGRES_PASSWORD", os.environ["POSTGRES_PASSWORD"])
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

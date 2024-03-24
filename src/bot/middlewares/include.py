@@ -1,6 +1,9 @@
 from aiogram import Bot, Dispatcher
+from aiohttp import ClientSession
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from structlog.typing import FilteringBoundLogger
+
+from settings import APISettings
 
 from .outer.callback_answer import CallbackAnswerMiddleware
 from .outer.core_di import ServiceDIMiddleware
@@ -15,6 +18,8 @@ from .request.retry import RetryRequestMiddleware
 def include_global_middlewares(
     bot: Bot,
     dp: Dispatcher,
+    api_settings: APISettings,
+    aiohttp_session: ClientSession,
     session_maker: async_sessionmaker[AsyncSession],
     logger: FilteringBoundLogger,
 ) -> None:
@@ -28,7 +33,7 @@ def include_global_middlewares(
     dp.update.outer_middleware(ThrottlingMiddleware())
 
     dp.update.outer_middleware(DBSessionMiddleware(session_maker))
-    dp.update.outer_middleware(ServiceDIMiddleware())
+    dp.update.outer_middleware(ServiceDIMiddleware(aiohttp_session, api_settings))
 
     dp.update.outer_middleware(UserContextMiddleware())
     dp.update.outer_middleware(UnknownUserMiddleware())  # !!

@@ -1,4 +1,5 @@
 from .locations import (
+    back_to_location_keyboard,
     delete_location_keyboard,
     edit_location_keyboard,
     locations_keyboard,
@@ -14,6 +15,7 @@ from .profile import (
 from .rec_user import one_recommend_user_keyboard, recommend_users_keyboard
 from .start import fill_profile_keyboard, start_keyboard
 from .travels import (
+    back_to_travel_keyboard,
     back_to_travels_keyboard,
     check_joined_travel,
     delete_travel_keyboard,
@@ -26,6 +28,8 @@ from .universal import back_cancel_keyboard, cancel_keyboard, reply_keyboard_fro
 __all__ = (
     "after_registration_keyboard",
     "back_cancel_keyboard",
+    "back_to_location_keyboard",
+    "back_to_travel_keyboard",
     "back_to_travels_keyboard",
     "cancel_keyboard",
     "choose_status_keyboard",

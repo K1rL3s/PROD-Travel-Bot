@@ -22,11 +22,7 @@ class TravelModel(AlchemyBaseModel):
     )
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
-    title: Mapped[str] = mapped_column(
-        String(MAX_TRAVEL_TITLE_LENGTH),
-        nullable=False,
-        unique=True,
-    )
+    title: Mapped[str] = mapped_column(String(MAX_TRAVEL_TITLE_LENGTH), nullable=False)
     description: Mapped[str] = mapped_column(
         String(MAX_TRAVEL_DESCRIPTION_LENGTH),
         nullable=False,

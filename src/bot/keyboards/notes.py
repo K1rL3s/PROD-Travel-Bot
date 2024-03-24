@@ -10,8 +10,9 @@ from bot.callbacks import (
     NoteStatusData,
     SwitchNoteData,
 )
+from bot.keyboards.emoji import ADD, BACK, DELETE, TRAVEL
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import ADD, BACK, DELETE, TRAVEL, cancel_button
+from bot.keyboards.universal import cancel_button
 from bot.utils.enums import BotMenu
 from core.models import Note, Travel
 from core.services import NoteService

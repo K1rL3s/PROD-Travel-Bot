@@ -11,7 +11,7 @@ from bot.keyboards import (
     edit_location_keyboard,
     reply_keyboard_from_list,
 )
-from bot.utils.format import format_location
+from bot.utils.format import format_datetime, format_location
 from bot.utils.html import html_quote
 from bot.utils.states import LocationState
 from bot.utils.tg import delete_last_message
@@ -21,10 +21,12 @@ from core.services.location import (
     get_location_field_validator,
     validate_city,
     validate_country,
+    validate_start_at,
 )
 from core.utils.enums import LocationField
 
-from .phrases import CITY_ERROR, COUNTRY_ERROR, error_text_by_field
+from ...utils.datehelp import datetime_by_format
+from .phrases import CITY_ERROR, COUNTRY_ERROR, START_AT_ERROR, error_text_by_field
 
 router = Router(name=__name__)
 
@@ -43,11 +45,7 @@ async def edit_location(
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
 
-for field in (
-    LocationField.TITLE,
-    LocationField.ADDRESS,
-    LocationField.START_AT,
-):
+for field in (LocationField.TITLE, LocationField.ADDRESS):
 
     @router.callback_query(
         EditLocationData.filter(F.field == field),
@@ -106,13 +104,73 @@ async def edit_field_entered(
 
 
 @router.callback_query(
+    EditLocationData.filter(F.field == LocationField.START_AT),
+    LocationCallbackOwner(),
+)
+async def edit_start_at(
+    callback: CallbackQuery,
+    callback_data: EditLocationData,
+    state: FSMContext,
+    location: LocationExtended,
+) -> None:
+    text = "Введите новое значение.\nТекущее: " + format_datetime(location.start_at)
+    await callback.message.edit_text(text=text, reply_markup=back_cancel_keyboard)
+
+    await state.set_state(LocationState.editing_start_at)
+    await state.set_data(
+        {
+            "last_id": callback.message.message_id,
+            "location_id": callback_data.location_id,
+            "field": "start_at",
+            "page": callback_data.page,
+        },
+    )
+
+
+@router.message(
+    F.text.as_("start_at"),
+    LocationState.editing_start_at,
+    LocationStateOwner(),
+)
+async def start_at_entered(
+    message: Message,
+    bot: Bot,
+    state: FSMContext,
+    location_service: LocationService,
+    location: LocationExtended,
+    start_at: str,
+) -> None:
+    if not validate_start_at(start_at):
+        text = START_AT_ERROR
+        keyboard = back_cancel_keyboard
+    else:
+        location.start_at = datetime_by_format(start_at)
+        await location_service.update_with_access_check(
+            message.from_user.id, location.id, location
+        )
+
+        data = await state.get_data()
+        page: int = data["page"]
+        last_id: int = data["last_id"]
+
+        text = format_location(location)
+        keyboard = edit_location_keyboard(location.id, page)
+        await state.clear()
+        await state.set_data({"last_id": last_id})
+
+    bot_msg = await message.answer(text=text, reply_markup=keyboard)
+    await delete_last_message(bot, state, message)
+    await state.update_data(last_id=bot_msg.message_id)
+
+
+@router.callback_query(
     or_f(
         EditLocationData.filter(F.field == LocationField.CITY),
         EditLocationData.filter(F.field == LocationField.COUNTRY),
     ),
     LocationCallbackOwner(),
 )
-async def edit_location_city_country(
+async def edit_city_or_country(
     callback: CallbackQuery,
     callback_data: EditLocationData,
     state: FSMContext,

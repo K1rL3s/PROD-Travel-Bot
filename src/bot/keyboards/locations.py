@@ -7,10 +7,11 @@ from bot.callbacks import (
     EditLocationData,
     GetLocationData,
     GetTravelData,
+    GetWeatherData,
     LocationsPaginator,
 )
+from bot.keyboards.emoji import ADD, BACK, DELETE, EDIT, LOCATION, TRAVEL, WEATHER
 from bot.keyboards.paginate import paginate_keyboard
-from bot.keyboards.universal import ADD, BACK, DELETE, EDIT, TRAVEL
 from bot.utils.enums import BotMenu
 from core.models import LocationExtended
 from core.services import LocationService, TravelService
@@ -77,6 +78,16 @@ def one_location_keyboard(
 ) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
+    builder.row(
+        InlineKeyboardButton(
+            text=f"{WEATHER} Погода",
+            callback_data=GetWeatherData(
+                location_id=location.id,
+                page=page,
+            ).pack(),
+        )
+    )
+
     if location.travel.owner_id == tg_id:
         builder.row(
             InlineKeyboardButton(
@@ -96,6 +107,8 @@ def one_location_keyboard(
             ),
         )
 
+    builder.adjust(1, repeat=True)
+
     builder.row(
         InlineKeyboardButton(
             text=f"{BACK} Все локации",
@@ -103,10 +116,14 @@ def one_location_keyboard(
                 page=page,
                 travel_id=location.travel_id,
             ).pack(),
-        )
+        ),
+        InlineKeyboardButton(
+            text=f"{TRAVEL} Путешествие",
+            callback_data=GetTravelData(travel_id=location.travel_id).pack(),
+        ),
     )
 
-    return builder.adjust(1, repeat=True).as_markup()
+    return builder.as_markup()
 
 
 def edit_location_keyboard(location_id: int, page: int):
@@ -153,6 +170,29 @@ def delete_location_keyboard(location_id: int, page: int) -> InlineKeyboardMarku
                         location_id=location_id,
                         page=page,
                     ).pack(),
+                )
+            ],
+        ]
+    )
+
+
+def back_to_location_keyboard(
+    location_id: int, travel_id: int, page: int
+) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=f"{BACK}{LOCATION} Локация",
+                    callback_data=GetLocationData(
+                        location_id=location_id, page=page
+                    ).pack(),
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text=f"{TRAVEL} Путешествие",
+                    callback_data=GetTravelData(travel_id=travel_id).pack(),
                 )
             ],
         ]

@@ -3,15 +3,20 @@ from typing import Any
 
 from aiogram import BaseMiddleware
 from aiogram.types import TelegramObject
+from aiohttp import ClientSession
 from geopy.adapters import AioHTTPAdapter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.services.geo import GeoService
-from core.services.location import LocationService
-from core.services.member import MemberService
-from core.services.note import NoteService
-from core.services.travel import TravelService
-from core.services.user import UserService
+from core.services import (
+    GeoService,
+    LocationService,
+    MemberService,
+    NoteService,
+    RoutingService,
+    TravelService,
+    UserService,
+    WeatherService,
+)
 from database.repositories import (
     CityAlchemyRepo,
     CountryAlchemyRepo,
@@ -22,11 +27,20 @@ from database.repositories import (
     TravelAlchemyRepo,
     UserAlchemyRepo,
 )
-from geo import GeoPyLocator
+from geo import GeoPyLocator, GraphHopperRouting, OpenWeather, TzfTimezoner
+from settings import APISettings
 
 
 class ServiceDIMiddleware(BaseMiddleware):
     """Мидлварь для добавления сервисов в контекст обработчиков телеграма."""
+
+    def __init__(
+        self,
+        aiohttp_session: ClientSession,
+        api_settings: APISettings,
+    ) -> None:
+        self.aiohttp_session = aiohttp_session
+        self.api_settings = api_settings
 
     async def __call__(
         self,
@@ -44,19 +58,27 @@ class ServiceDIMiddleware(BaseMiddleware):
         invite_link_repo = InviteLinkAlchemyRepo(session)
         country_repo = CountryAlchemyRepo(session)
         city_repo = CityAlchemyRepo(session)
+        geo_weather = OpenWeather(
+            self.aiohttp_session,
+            self.api_settings.open_weather_key,
+        )
+        routing = GraphHopperRouting()
+        timezoner = TzfTimezoner()
 
         user_service = UserService(user_repo)
         travel_service = TravelService(travel_repo)
         location_service = LocationService(location_repo, travel_repo)
         note_service = NoteService(note_repo, travel_repo)
         member_service = MemberService(member_repo, travel_repo, invite_link_repo)
+        weather_service = WeatherService(geo_weather)
+        routing_service = RoutingService(routing, location_repo)
 
         async with GeoPyLocator(
             timeout=10,
             user_agent="travel-k1rl3s-bot-application",
             adapter_factory=AioHTTPAdapter,
         ) as geolocator:
-            geo_service = GeoService(geolocator, country_repo, city_repo)
+            geo_service = GeoService(geolocator, timezoner, country_repo, city_repo)
 
             data.update(
                 {
@@ -66,6 +88,8 @@ class ServiceDIMiddleware(BaseMiddleware):
                     "note_service": note_service,
                     "member_service": member_service,
                     "geo_service": geo_service,
+                    "weather_service": weather_service,
+                    "routing_service": routing_service,
                 }
             )
 

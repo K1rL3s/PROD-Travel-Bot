@@ -23,7 +23,6 @@ class UserModel(AlchemyBaseModel):
         primary_key=True,
         unique=True,
         nullable=False,
-        index=True,
     )
     country_id: Mapped[int] = mapped_column(
         ForeignKey("countries.id"),

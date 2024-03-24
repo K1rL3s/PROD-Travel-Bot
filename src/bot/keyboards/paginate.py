@@ -4,7 +4,6 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import ButtonType, InlineKeyboardBuilder
 
 from bot.callbacks import Paginator
-from bot.keyboards.universal import start_button
 
 PAGE_BACK = "⬅️Назад"
 PAGE_FORWARD = "➡️Вперёд"
@@ -50,7 +49,5 @@ def paginate_keyboard(
 
     if additional_buttons:
         builder.row(*additional_buttons, width=len(additional_buttons))
-
-    builder.row(start_button, width=1)
 
     return builder.as_markup()

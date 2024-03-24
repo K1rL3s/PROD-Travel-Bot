@@ -47,8 +47,15 @@ class TravelAlchemyRepo(TravelRepo, BaseAlchemyRepo):
         model = await self.session.scalar(query)
         return TravelExtended.model_validate(model) if model else None
 
-    async def get_by_title(self, title: str) -> TravelExtended | None:
-        query = select(TravelModel).where(TravelModel.title == title)
+    async def get_by_title_and_owner_id(
+        self,
+        title: str,
+        owner_id: int,
+    ) -> TravelExtended | None:
+        query = select(TravelModel).where(
+            TravelModel.title == title,
+            TravelModel.owner_id == owner_id,
+        )
         model = await self.session.scalar(query)
         return TravelExtended.model_validate(model) if model else None
 

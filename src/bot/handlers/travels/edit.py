@@ -75,7 +75,9 @@ async def edit_travel_field_enter(
 
     validator = get_travel_field_validator(edit_field)
     error_text = error_text_by_field[edit_field]
-    if (value := await validator(travel_service, message.text)) is None:
+    if (
+        value := await validator(travel_service, message.text, message.from_user.id)
+    ) is None:
         await message.reply(text=error_text, reply_markup=back_cancel_keyboard)
         await delete_last_message(bot, state, message)
         return

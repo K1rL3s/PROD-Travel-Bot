@@ -61,16 +61,25 @@ class TravelService:
 
     # Да, оно будет браковать изменение названия своего путешествия на такое же
     @staticmethod
-    async def validate_title(travel_service: "TravelService", title: str) -> str | None:
+    async def validate_title(
+        travel_service: "TravelService",
+        title: str,
+        tg_id: int,
+    ) -> str | None:
         if (
             0 < len(title) <= MAX_TRAVEL_TITLE_LENGTH
-            and await travel_service.travel_repo.get_by_title(title) is None
+            and await travel_service.travel_repo.get_by_title_and_owner_id(title, tg_id)
+            is None
         ):
             return title
         return None
 
     @staticmethod
-    async def validate_description(_: "TravelService", description: str) -> str | None:
+    async def validate_description(
+        _: "TravelService",
+        description: str,
+        __: int,
+    ) -> str | None:
         if 0 < len(description) <= MAX_TRAVEL_DESCRIPTION_LENGTH:
             return description
         return None
@@ -78,7 +87,7 @@ class TravelService:
 
 def get_travel_field_validator(
     field: str,
-) -> Callable[[TravelService, T], Awaitable[T | None]]:
+) -> Callable[[TravelService, T, int], Awaitable[T | None]]:
     if field == TravelField.TITLE:
         return TravelService.validate_title
     if field == TravelField.DESCRIPTION:

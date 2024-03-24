@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.models.location import MAX_LOCATION_ADDRESS_LENGTH, MAX_LOCATION_TITLE_LENGTH
@@ -41,6 +41,8 @@ class LocationModel(AlchemyBaseModel):
         nullable=False,
     )
     start_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    latitude: Mapped[float] = mapped_column(Float, nullable=False)
+    longitude: Mapped[float] = mapped_column(Float, nullable=False)
 
     travel: Mapped["TravelModel"] = relationship(
         "TravelModel",
