@@ -10,6 +10,8 @@ from bot.utils.format import format_travel
 from core.models import TravelExtended
 from core.services import TravelService
 
+from .phrases import YOUR_TRAVELS
+
 router = Router(name=__name__)
 
 
@@ -18,7 +20,7 @@ async def all_travels_message(
     message: CallbackQuery,
     travel_service: TravelService,
 ) -> None:
-    text = "Ваши путешествия"
+    text = YOUR_TRAVELS
     keyboard = await travels_keyboard(message.from_user.id, 0, travel_service)
     await message.answer(text=text, reply_markup=keyboard)
 
@@ -28,7 +30,7 @@ async def all_travels_callback(
     callback: CallbackQuery,
     travel_service: TravelService,
 ) -> None:
-    text = "Ваши путешествия"
+    text = YOUR_TRAVELS
     keyboard = await travels_keyboard(callback.from_user.id, 0, travel_service)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -39,7 +41,7 @@ async def paginate_travels(
     callback_data: Paginator,
     travel_service: TravelService,
 ) -> None:
-    text = "Ваши путешествия"
+    text = YOUR_TRAVELS
     keyboard = await travels_keyboard(
         callback.from_user.id,
         callback_data.page,

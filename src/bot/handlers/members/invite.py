@@ -10,6 +10,8 @@ from bot.utils.format import format_invite_link
 from core.models import InviteLinkExtended, TravelExtended
 from core.services import MemberService
 
+from .phrases import ALL_MEMBERS, SEND_THIS_TO_FRIEND
+
 router = Router(name=__name__)
 
 
@@ -30,9 +32,12 @@ async def generate_invite_link(
     )
 
     text = await format_invite_link(invite_link, bot)
-    await callback.message.answer(text=text)
+    bot_msg = await callback.message.answer(text=text)
 
-    text = f'Участники путешествия "{travel.title}"'
+    text = SEND_THIS_TO_FRIEND
+    await bot_msg.reply(text=text)
+
+    text = ALL_MEMBERS.format(title=travel.title)
     keyboard = await members_keyboard(
         callback.from_user.id,
         callback_data.page,

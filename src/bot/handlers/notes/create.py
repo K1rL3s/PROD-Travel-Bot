@@ -13,7 +13,15 @@ from core.models import Note, TravelExtended
 from core.services import NoteService
 from core.services.note import validate_title
 
-from .phrases import TITLE_ERROR
+from .phrases import (
+    ALL_NOTES,
+    CHOOSE_STATUS,
+    FILL_TITLE,
+    NOTE_ERROR,
+    NOTE_SAVED,
+    SEND_ME_NOTE,
+    TITLE_ERROR,
+)
 
 router = Router(name=__name__)
 
@@ -24,60 +32,48 @@ async def create_note(
     callback_data: AddNoteData,
     state: FSMContext,
 ) -> None:
-    text = "Придумайте короткое название для заметки, чтобы запомнить её"
+    text = FILL_TITLE
     await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
     await state.set_state(NoteCreating.title)
-    await state.set_data(
-        {"travel_id": callback_data.travel_id, "last_id": callback.message.message_id}
-    )
+    await state.set_data({"travel_id": callback_data.travel_id})
 
 
 @router.message(F.text.as_("title"), NoteCreating.title)
-async def create_note_title(
+async def title_entered(
     message: Message,
-    bot: Bot,
     state: FSMContext,
     title: str,
 ) -> None:
     if validate_title(title):
-        text = (
-            "Сделать заметку публичной (для всех в путешествии) "
-            "или приватной (только для вас)?"
-        )
+        text = CHOOSE_STATUS
         keyboard = choose_status_keyboard
         await state.update_data(title=title)
+        await state.set_state(NoteCreating.status)
+
     else:
         text = TITLE_ERROR
         keyboard = cancel_keyboard
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
-    await state.set_state(NoteCreating.status)
+    await message.answer(text=text, reply_markup=keyboard)
 
 
 @router.callback_query(NoteStatusData.filter(), NoteCreating.status)
-async def create_note_status(
+async def status_entered(
     callback: CallbackQuery,
     callback_data: NoteStatusData,
     state: FSMContext,
 ) -> None:
-    text = (
-        "Отправьте мне текст, голосовоое соообщение, кружочек, фотографию, "
-        "видео или документ. Я сохраню это как заметку."
-    )
-    await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
+    text = SEND_ME_NOTE
+    await callback.message.answer(text=text, reply_markup=cancel_keyboard)
 
     await state.set_state(NoteCreating.file)
     await state.update_data(is_public=callback_data.is_public)
 
 
 @router.message(NoteCreating.file, NoteDocumentFilter())
-async def create_note_file(
+async def file_entered(
     message: Message,
     state: FSMContext,
-    bot: Bot,
     note_service: NoteService,
     document_id: str,
 ) -> None:
@@ -93,9 +89,12 @@ async def create_note_file(
         is_public=is_public,
         document_id=document_id,
     )
-    await note_service.create_with_access_check(message.from_user.id, note)
+    note = await note_service.create_with_access_check(message.from_user.id, note)
 
-    text = "Успешно сохранил"
+    text = NOTE_SAVED
+    await message.reply(text=text)
+
+    text = ALL_NOTES.format(title=note.travel.title)
     keyboard = await notes_keyboard(
         message.from_user.id,
         0,
@@ -103,8 +102,6 @@ async def create_note_file(
         note_service,
     )
     await message.answer(text=text, reply_markup=keyboard)
-
-    await delete_last_message(bot, state, message)
     await state.clear()
 
 
@@ -114,11 +111,7 @@ async def create_note_file_unknown(
     state: FSMContext,
     bot: Bot,
 ) -> None:
-    text = (
-        "Такие файлы я ещё не умею сохранять. :(\n"
-        "Вы можете загрузить текст, голосовоое соообщение, кружочек, фотографию, "
-        "видео или документ"
-    )
+    text = NOTE_ERROR
     await message.reply(text=text, reply_markup=None)
 
     await delete_last_message(bot, state, message)
@@ -135,7 +128,7 @@ async def cancel_create_note(
     travel: TravelExtended,
     note_service: NoteService,
 ) -> None:
-    text = f'Заметки путешествия "{travel.title}"'
+    text = ALL_NOTES.format(title=travel.title)
     keyboard = await notes_keyboard(
         callback.from_user.id,
         0,

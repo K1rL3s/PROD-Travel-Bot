@@ -7,6 +7,8 @@ from bot.keyboards import notes_keyboard
 from core.models import NoteExtended
 from core.services import NoteService
 
+from .phrases import ALL_NOTES
+
 router = Router(name=__name__)
 
 
@@ -22,7 +24,7 @@ async def delete_note(
 ) -> None:
     await note_service.delete_with_access_check(callback.from_user.id, note.id)
 
-    text = f'Заметки путешествия "{note.travel.title}"'
+    text = ALL_NOTES.format(title=note.travel.title)
     keyboard = await notes_keyboard(
         callback.from_user.id,
         callback_data.page,

@@ -8,6 +8,8 @@ from bot.keyboards import delete_location_keyboard, locations_keyboard
 from core.models import LocationExtended
 from core.services import LocationService, TravelService
 
+from .phrases import ALL_LOCATIONS
+
 router = Router(name=__name__)
 
 
@@ -20,7 +22,7 @@ async def delete_location(
     callback_data: DeleteLocationData,
     location: LocationExtended,
 ) -> None:
-    text = f'Вы уверены, что хотите удалить локацию "{location.title}"?'
+    text = f'❗ Вы уверены, что хотите удалить локацию "{location.title}"?'
     keyboard = delete_location_keyboard(callback_data.location_id, callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -39,7 +41,7 @@ async def delete_location_sure(
 ) -> None:
     await location_service.delete_with_access_check(callback.from_user.id, location.id)
 
-    text = "Локации"
+    text = ALL_LOCATIONS.format(title=location.travel.title)
     keyboard = await locations_keyboard(
         callback.from_user.id,
         callback_data.page,

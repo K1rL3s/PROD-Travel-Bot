@@ -41,6 +41,17 @@ ALL_RIGHT_BRO = """
 
 DESCRIPTION_ERROR = "Слишком много о себе вы пишите. Давайте ещё раз, но короче"
 
+EDIT_CITY_COUNTRY = """
+❗ Так как не все города существуют во всех странах, то вам надо ввести и город, и страну.
+Начни с города, введи новое значение.
+Текущее: {value}
+""".strip()
+EDIT_COUNTRY = """
+✅ Город есть, а из какой он страны?
+Текущая: {country}
+""".strip()
+
+
 error_text_by_field = {
     ProfileField.NAME: NAME_ERROR,
     ProfileField.AGE: AGE_ERROR,

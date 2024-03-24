@@ -40,7 +40,12 @@ async def locations_keyboard(
         )
     ]
 
-    additional_buttons: list[InlineKeyboardButton] = []
+    additional_buttons = [
+        InlineKeyboardButton(
+            text=f"{TRAVEL} Путешествие",
+            callback_data=GetTravelData(travel_id=travel_id, page=page).pack(),
+        )
+    ]
     if await travel_service.is_owner(tg_id, travel_id):
         additional_buttons.append(
             InlineKeyboardButton(
@@ -51,13 +56,6 @@ async def locations_keyboard(
                 ).pack(),
             )
         )
-
-    additional_buttons.append(
-        InlineKeyboardButton(
-            text=f"{TRAVEL} Путешествие",
-            callback_data=GetTravelData(travel_id=travel_id, page=page).pack(),
-        )
-    )
 
     return paginate_keyboard(
         buttons=subjects,

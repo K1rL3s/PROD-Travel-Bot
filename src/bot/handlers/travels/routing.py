@@ -7,6 +7,8 @@ from bot.keyboards import back_to_travel_keyboard
 from core.models import TravelExtended
 from core.services import LocationService, RoutingService
 
+from .phrases import NOT_ENOUGH_LOCATIONS, ROUTE_URL
+
 router = Router(name=__name__)
 
 
@@ -23,8 +25,8 @@ async def get_route(
         callback_data.travel_id,
     )
     if locations:
-        text = await routing_service.get_route_url(travel)
+        text = ROUTE_URL.format(url=await routing_service.get_route_url(travel))
     else:
-        text = "Пока в путешествии мало локаций, чтобы строить маршрут"
+        text = NOT_ENOUGH_LOCATIONS
     keyboard = back_to_travel_keyboard(callback_data.travel_id, callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)

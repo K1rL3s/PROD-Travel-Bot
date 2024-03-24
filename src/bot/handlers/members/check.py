@@ -8,6 +8,8 @@ from bot.utils.format import format_member
 from core.models import TravelExtended, UserExtended
 from core.services import MemberService
 
+from .phrases import ALL_MEMBERS
+
 router = Router(name=__name__)
 
 
@@ -18,7 +20,7 @@ async def members_paginator(
     travel: TravelExtended,
     member_service: MemberService,
 ) -> None:
-    text = f'Участники путешествия "{travel.title}"'
+    text = ALL_MEMBERS.format(title=travel.title)
     keyboard = await members_keyboard(
         callback.from_user.id,
         callback_data.page,

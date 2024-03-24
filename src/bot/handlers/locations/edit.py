@@ -11,6 +11,7 @@ from bot.keyboards import (
     edit_location_keyboard,
     reply_keyboard_from_list,
 )
+from bot.utils.datehelp import datetime_by_format
 from bot.utils.format import format_datetime, format_location
 from bot.utils.html import html_quote
 from bot.utils.states import LocationState
@@ -25,7 +26,6 @@ from core.services.location import (
 )
 from core.utils.enums import LocationField
 
-from ...utils.datehelp import datetime_by_format
 from .phrases import CITY_ERROR, COUNTRY_ERROR, START_AT_ERROR, error_text_by_field
 
 router = Router(name=__name__)
@@ -40,7 +40,7 @@ async def edit_location(
     callback_data: EditLocationData,
     location: LocationExtended,
 ) -> None:
-    text = "Что вы хотите изменить?\n\n" + format_location(location)
+    text = "❓ Что вы хотите изменить?\n\n" + format_location(location)
     keyboard = edit_location_keyboard(callback_data.location_id, callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 

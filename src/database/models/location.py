@@ -32,6 +32,7 @@ class LocationModel(AlchemyBaseModel):
         ForeignKey("cities.id"),
         nullable=False,
     )
+
     title: Mapped[str] = mapped_column(
         String(MAX_LOCATION_TITLE_LENGTH),
         nullable=False,
@@ -40,7 +41,7 @@ class LocationModel(AlchemyBaseModel):
         String(MAX_LOCATION_ADDRESS_LENGTH),
         nullable=False,
     )
-    start_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     latitude: Mapped[float] = mapped_column(Float, nullable=False)
     longitude: Mapped[float] = mapped_column(Float, nullable=False)
 

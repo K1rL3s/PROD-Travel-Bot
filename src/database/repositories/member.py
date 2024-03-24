@@ -95,6 +95,7 @@ class MemberAlchemyRepo(MemberRepo, BaseAlchemyRepo):
         query = (
             select(UserModel)
             .where(age_difference, not_in_travel, in_owner_city_or_in_locations_city)
+            .order_by(UserModel.name)
             .offset(offset)
         )
         if limit is not None:

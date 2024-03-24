@@ -7,6 +7,8 @@ from bot.keyboards import notes_keyboard, one_note_keyboard
 from core.models import NoteExtended, TravelExtended
 from core.services import NoteService
 
+from .phrases import ALL_NOTES, ONE_NOTE
+
 router = Router(name=__name__)
 
 
@@ -17,7 +19,7 @@ async def paginate_notes(
     travel: TravelExtended,
     note_service: NoteService,
 ) -> None:
-    text = f'Заметки путешествия "{travel.title}"'
+    text = ALL_NOTES.format(title=travel.title)
     keyboard = await notes_keyboard(
         callback.from_user.id,
         callback_data.page,
@@ -39,17 +41,17 @@ async def one_note(
     note: NoteExtended,
     travel: TravelExtended,
 ) -> None:
-    caption = "Вот файл с заметкой"
-    text = "Действия"
+    caption = "📝 Вот файл с заметкой"
+    text = ONE_NOTE.format(note=note.title, travel=note.travel.title)
     keyboard = one_note_keyboard(
         note,
         travel,
         callback.from_user.id,
         callback_data.page,
     )
-    bot_msg = await bot.send_document(
+    await bot.send_document(
         chat_id=callback.message.chat.id,
         document=note.document_id,
         caption=caption,
     )
-    await bot_msg.reply(text=text, reply_markup=keyboard)
+    await callback.message.answer(text=text, reply_markup=keyboard)

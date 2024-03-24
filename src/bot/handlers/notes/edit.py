@@ -7,6 +7,8 @@ from bot.keyboards import one_note_keyboard
 from core.models import NoteExtended
 from core.services import NoteService
 
+from .phrases import ONE_NOTE
+
 router = Router(name=__name__)
 
 
@@ -21,7 +23,7 @@ async def switch_note_status(
         callback.from_user.id, note.id
     )
 
-    text = f'Заметка "{note.title}" путешествия "{note.travel.title}"'
+    text = ONE_NOTE.format(note=note.title, travel=note.travel.title)
     keyboard = one_note_keyboard(
         note,
         note.travel,

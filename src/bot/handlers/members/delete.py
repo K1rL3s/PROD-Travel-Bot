@@ -8,6 +8,8 @@ from bot.keyboards import delete_member_keyboard, members_keyboard
 from core.models import TravelExtended, User
 from core.services import MemberService
 
+from .phrases import ALL_MEMBERS
+
 router = Router(name=__name__)
 
 
@@ -23,7 +25,7 @@ async def delete_member(
     member: User,
 ) -> None:
     text = (
-        f'Вы уверены, что хотите удалить участника "{member.name}" '
+        f'❗ Вы уверены, что хотите удалить участника "{member.name}" '
         f'из путешествия "{travel.title}"?'
     )
     keyboard = delete_member_keyboard(
@@ -51,7 +53,7 @@ async def delete_member_sure(
         travel.id,
     )
 
-    text = f'Участники путешествия "{travel.title}"'
+    text = ALL_MEMBERS.format(title=travel.title)
     keyboard = await members_keyboard(
         callback.from_user.id,
         callback_data.page,

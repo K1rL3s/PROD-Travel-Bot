@@ -11,6 +11,8 @@ from bot.utils.format import format_invite_link, format_user
 from core.models import InviteLinkExtended, Travel, User
 from core.services import MemberService, UserService
 
+from .phrases import RECOMMENDED_USERS
+
 router = Router(name=__name__)
 
 
@@ -22,7 +24,7 @@ async def get_recommend_users(
     user: User,
     travel: Travel,
 ) -> None:
-    text = "Рекомендованные путешественники"
+    text = RECOMMENDED_USERS
     keyboard = await recommend_users_keyboard(
         user.id,
         travel.id,
@@ -40,7 +42,7 @@ async def get_one_recommend_user(
     travel: Travel,
 ) -> None:
     member = await user_service.get(callback_data.user_id)
-    text = "Вот, кого я рекомендую\n\n" + format_user(member)
+    text = "👇 Вот, кого я нашёл для тебя\n\n" + format_user(member)
     keyboard = one_recommend_user_keyboard(
         member.id,
         travel.id,
@@ -68,7 +70,7 @@ async def inivte_recommend_user(
     text = await format_invite_link(invite_link, bot)
     await callback.message.answer(text=text)
 
-    text = "Рекомендованные путешественники"
+    text = RECOMMENDED_USERS
     keyboard = await recommend_users_keyboard(
         user.id,
         travel.id,

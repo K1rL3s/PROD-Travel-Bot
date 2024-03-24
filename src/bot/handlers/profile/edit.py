@@ -19,7 +19,13 @@ from core.services import GeoService, UserService
 from core.services.user import get_user_field_validator, validate_city, validate_country
 from core.utils.enums import ProfileField
 
-from .phrases import CITY_ERROR, COUNTRY_ERROR, error_text_by_field
+from .phrases import (
+    CITY_ERROR,
+    COUNTRY_ERROR,
+    EDIT_CITY_COUNTRY,
+    EDIT_COUNTRY,
+    error_text_by_field,
+)
 
 router = Router(name=__name__)
 
@@ -30,7 +36,7 @@ router = Router(name=__name__)
     ProfileState.editing,
 )
 async def edit_profile(callback: CallbackQuery, user: UserExtended) -> None:
-    text = "Что вы хотите изменить?\n\n" + format_user(user)
+    text = "❓ Что вы хотите изменить?\n\n" + format_user(user)
     keyboard = edit_profile_fields_keyboard
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -44,7 +50,7 @@ for field in (ProfileField.NAME, ProfileField.AGE, ProfileField.DESCRIPTION):
         state: FSMContext,
         user: User,
     ) -> None:
-        text = "Введите новое значение.\nТекущее: " + str(
+        text = "👇 Введите новое значение.\nТекущее: " + str(
             getattr(user, callback_data.field)
         )
         await callback.message.edit_text(text=text, reply_markup=back_cancel_keyboard)
@@ -91,17 +97,10 @@ async def field_entered(
 async def edit_profile_city_country(
     callback: CallbackQuery,
     state: FSMContext,
-    user: User,
+    user: UserExtended,
 ) -> None:
-    text = (
-        "Так как не все города существуют во всех странах, "
-        "то вам надо ввести и город, и страну. "
-        "Начните с города, введите новое значение\n "
-        f"Текущее: {getattr(user, 'city')}"
-    )
-
+    text = EDIT_CITY_COUNTRY.format(value=user.city)
     await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
-    await state.set_data({"last_id": callback.message.message_id})
     await state.set_state(ProfileState.editing_city)
 
 
@@ -111,7 +110,6 @@ async def edit_profile_city_country(
 )
 async def city_enter(
     message: Message,
-    bot: Bot,
     state: FSMContext,
     user: UserExtended,
     geo_service: GeoService,
@@ -119,7 +117,7 @@ async def city_enter(
 ) -> None:
     city = validate_city(city) and await geo_service.normalize_city(city)
     if city:
-        text = f"Город есть, а из какой он страны?\nТекущая: {user.country}"
+        text = EDIT_COUNTRY.format(county=user.country.title)
         countries = await geo_service.get_countries_by_city(city)
         keyboard = reply_keyboard_from_list(countries)
         await state.set_state(ProfileState.editing_country)
@@ -128,9 +126,7 @@ async def city_enter(
         text = CITY_ERROR
         keyboard = back_cancel_keyboard
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=keyboard)
 
 
 @router.message(
@@ -139,7 +135,6 @@ async def city_enter(
 )
 async def country_enter(
     message: Message,
-    bot: Bot,
     state: FSMContext,
     user: UserExtended,
     user_service: UserService,
@@ -151,7 +146,6 @@ async def country_enter(
     if validate_country(country):
         data = await state.get_data()
         city_title: str = data["city"]
-        last_id: int = data["last_id"]
 
         country = await geo_service.normalize_country(country)
         countries = await geo_service.get_countries_by_city(city_title)
@@ -165,8 +159,5 @@ async def country_enter(
             text = format_user(user)
             keyboard = edit_profile_fields_keyboard
             await state.clear()
-            await state.set_data({"last_id": last_id})
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=keyboard)

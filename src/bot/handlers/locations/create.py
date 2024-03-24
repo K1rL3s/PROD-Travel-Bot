@@ -1,4 +1,4 @@
-from aiogram import Bot, F, Router
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
@@ -9,10 +9,10 @@ from bot.keyboards import (
     one_location_keyboard,
     reply_keyboard_from_list,
 )
+from bot.utils.datehelp import datetime_by_format
 from bot.utils.format import format_location
 from bot.utils.html import html_quote
 from bot.utils.states import LocationCreating
-from bot.utils.tg import delete_last_message
 from core.models import Location
 from core.services import GeoService, LocationService
 from core.services.location import (
@@ -20,9 +20,9 @@ from core.services.location import (
     validate_city,
     validate_country,
     validate_start_at,
+    validate_title,
 )
 
-from ...utils.datehelp import datetime_by_format
 from .phrases import (
     ADDRESS_ERROR,
     CITY_ERROR,
@@ -33,6 +33,7 @@ from .phrases import (
     FILL_START_AT,
     FILL_TITLE,
     START_AT_ERROR,
+    TITLE_ERROR,
 )
 
 router = Router(name=__name__)
@@ -50,7 +51,6 @@ async def create_location(
     await state.set_state(LocationCreating.title)
     await state.set_data(
         {
-            "last_id": callback.message.message_id,
             "travel_id": callback_data.travel_id,
             "page": callback_data.page,
         }
@@ -61,23 +61,22 @@ async def create_location(
 async def title_entered(
     message: Message,
     state: FSMContext,
-    bot: Bot,
     title: str,
 ) -> None:
-    text = FILL_CITY
-    bot_msg = await message.answer(text=text, reply_markup=cancel_keyboard)
+    if validate_title(title):
+        text = FILL_CITY
+        await state.update_data(title=title)
+        await state.set_state(LocationCreating.city)
+    else:
+        text = TITLE_ERROR
 
-    await delete_last_message(bot, state, message)
-
-    await state.set_state(LocationCreating.city)
-    await state.update_data(title=title, last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=cancel_keyboard)
 
 
 @router.message(F.text.as_("city"), LocationCreating.city)
 async def city_entered(
     message: Message,
     state: FSMContext,
-    bot: Bot,
     geo_service: GeoService,
     city: str,
 ) -> None:
@@ -92,17 +91,13 @@ async def city_entered(
         text = CITY_ERROR
         keyboard = cancel_keyboard
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=keyboard)
 
 
 @router.message(F.text.as_("country"), LocationCreating.country)
 async def country_entered(
     message: Message,
     state: FSMContext,
-    bot: Bot,
     geo_service: GeoService,
     country: str,
 ) -> None:
@@ -132,17 +127,13 @@ async def country_entered(
         text = COUNTRY_ERROR
         keyboard = cancel_keyboard
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=keyboard)
 
 
 @router.message(F.text.as_("address"), LocationCreating.address)
 async def address_entered(
     message: Message,
     state: FSMContext,
-    bot: Bot,
     address: str,
 ) -> None:
     if validate_address(address):
@@ -152,26 +143,20 @@ async def address_entered(
     else:
         text = ADDRESS_ERROR
 
-    bot_msg = await message.answer(text=text, reply_markup=cancel_keyboard)
-
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=cancel_keyboard)
 
 
 @router.message(F.text.as_("start_at"), LocationCreating.start_at)
 async def start_at_entered(
     message: Message,
     state: FSMContext,
-    bot: Bot,
     location_service: LocationService,
     geo_service: GeoService,
     start_at: str,
 ) -> None:
     if not validate_start_at(start_at):
         text = START_AT_ERROR
-        bot_msg = await message.answer(text=text, reply_markup=cancel_keyboard)
-        await delete_last_message(bot, state, message)
-        await state.update_data(last_id=bot_msg.message_id)
+        await message.answer(text=text, reply_markup=cancel_keyboard)
         return
 
     data = await state.get_data()
@@ -200,6 +185,4 @@ async def start_at_entered(
         page=data["page"],
     )
     await message.answer(text=text, reply_markup=keyboard)
-
-    await delete_last_message(bot, state, message)
     await state.clear()

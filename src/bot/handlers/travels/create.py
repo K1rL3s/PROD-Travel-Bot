@@ -17,7 +17,7 @@ from core.models import Travel
 from core.services import TravelService, get_travel_field_validator
 from core.utils.enums import TravelField
 
-from .phrases import error_text_by_field
+from .phrases import YOUR_TRAVELS, error_text_by_field
 
 T = TypeVar("T")
 
@@ -29,9 +29,9 @@ class Question:
 
 
 travel_create_steps = [
-    Question(text="Как будет называться это путешествие?", key="title"),
+    Question(text="1️⃣ Как будет называться это путешествие?", key="title"),
     Question(
-        text="Кратко опишите его. Что посетите, чего ожидаете?",
+        text="2️⃣ Кратко опишите его. Что посетите, чего ожидаете?",
         key="description",
     ),
 ]
@@ -142,7 +142,7 @@ class TravelCreateScene(BaseScene, state="travel"):
         state: FSMContext,
         travel_service: TravelService,
     ) -> None:
-        text = "Ваши путешествия"
+        text = YOUR_TRAVELS
         keyboard = await travels_keyboard(callback.from_user.id, 0, travel_service)
         await callback.message.edit_text(text=text, reply_markup=keyboard)
         await state.set_data({})

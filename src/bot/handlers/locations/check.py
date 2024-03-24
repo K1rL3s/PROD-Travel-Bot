@@ -8,6 +8,8 @@ from bot.utils.format import format_location
 from core.models import LocationExtended, TravelExtended
 from core.services import LocationService, TravelService
 
+from .phrases import ALL_LOCATIONS
+
 router = Router(name=__name__)
 
 
@@ -19,7 +21,7 @@ async def paginate_locations(
     location_service: LocationService,
     travel_service: TravelService,
 ) -> None:
-    text = f'Локации путешествия "{travel.title}"'
+    text = ALL_LOCATIONS.format(title=travel.title)
     keyboard = await locations_keyboard(
         callback.from_user.id,
         callback_data.page,

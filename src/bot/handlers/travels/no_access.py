@@ -34,7 +34,7 @@ async def edit_travel_no_access(
     data = await state.get_data()
     page: int = data["page"]
 
-    text = "Путешествие не найдено или у вас нет к нему доступа :("
+    text = "😵‍💫 Путешествие не найдено или у вас нет к нему доступа :("
     keyboard = back_to_travels_keyboard(page)
     await message.answer(text=text, reply_markup=keyboard)
 
