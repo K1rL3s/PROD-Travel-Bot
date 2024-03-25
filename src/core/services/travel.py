@@ -52,7 +52,7 @@ class TravelService:
         travel_id: int,
     ) -> None:
         if not await self.travel_repo.is_has_access(tg_id, travel_id):
-            return None
+            return
 
         await self.travel_repo.delete(travel_id)
 

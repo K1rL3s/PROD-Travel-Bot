@@ -16,6 +16,7 @@ class Location(BaseCoreModel):
     city_id: int
     address: str
     start_at: datetime
+    end_at: datetime
     latitude: float
     longitude: float
 

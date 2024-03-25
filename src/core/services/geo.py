@@ -115,14 +115,10 @@ class GeoService(BaseService):
             {location.country_title for location in locations if location.country_title}
         )
 
-    async def get_address_location(
+    async def get_location_address(
         self,
         title: str,
         city: str,
         country: str,
     ) -> GeoLocation | None:
-        location = cast(
-            GeoLocation,
-            await self.geocode(f"{title} {city} {country}", exactly_one=True),
-        )
-        return location
+        return await self.geocode(f"{title} {city} {country}", exactly_one=True)

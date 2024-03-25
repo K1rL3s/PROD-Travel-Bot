@@ -37,7 +37,7 @@ class MemberService(BaseService):
         travel_id: int,
     ) -> None:
         if not await self.travel_repo.is_owner(tg_id, travel_id):
-            return None
+            return
 
         await self.member_repo.remove_from_travel(member_id, travel_id)
 

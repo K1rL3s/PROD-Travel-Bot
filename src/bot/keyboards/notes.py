@@ -58,7 +58,7 @@ async def notes_keyboard(
     ]
 
     open_travel_button = InlineKeyboardButton(
-        text=f"{TRAVEL} Путешествие",
+        text=f"{BACK}{TRAVEL} Путешествие",
         callback_data=GetTravelData(travel_id=travel_id).pack(),
     )
     create_note_button = InlineKeyboardButton(

@@ -39,39 +39,3 @@ class GraphHopperRouting(Routing):
             if resp.status != 200:
                 return None
             return await resp.read()
-
-
-async def main() -> None:
-    import aiohttp
-
-    async with aiohttp.ClientSession() as session:
-        graph = GraphHopperRouting(
-            session,
-            "127.0.0.1",
-            5123,
-        )
-        # print(
-        #     graph.route_url(
-        #         [
-        #             (60.939187, 76.551179),
-        #             (61.003445, 69.019001),
-        #             (56.839104, 60.60825),
-        #             (55.750541, 37.617478),
-        #         ]
-        #     )
-        # )
-        bytes_io = await graph.route_image(
-            [
-                (76.551179, 60.939187),
-                (69.019001, 61.003445),
-                (60.60825, 56.839104),
-                (37.617478, 55.750541),
-            ]
-        )
-        print(len(bytes_io.read()))
-
-
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(main())

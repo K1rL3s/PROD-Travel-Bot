@@ -72,19 +72,3 @@ def api_dict_to_weather_model(result: dict[str, Any]) -> Weather:
         description=result["weather"][0]["description"],
         feels_like=result["main"]["feels_like"],
     )
-
-
-async def main():
-    import aiohttp
-
-    async with aiohttp.ClientSession() as session:
-        weather_map = OpenWeather(session, "appid")
-        datetime = dt.datetime.now(dt.timezone.max)
-        print(await weather_map.forecast(60.934607, 76.600629, datetime))
-        print(await weather_map.weather_now(60.934607, 76.600629))
-
-
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(main())

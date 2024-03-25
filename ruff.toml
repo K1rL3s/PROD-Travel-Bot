@@ -1,0 +1,39 @@
+line-length = 88
+indent-width = 4
+target-version = "py310"
+
+[lint]
+select = [
+  "C",
+  "C4",
+  "E",
+  "F",
+  "T10",
+  "T20",
+  "Q",
+  "RET",
+]
+ignore = [
+  "F401",
+  "E501",
+  "C901",
+  "RET503",
+]
+exclude = [
+  ".git",
+  "build",
+  "dist",
+  "venv",
+  ".venv",
+  "docs",
+  "dev",
+  "scripts",
+  "*.egg-info",
+]
+fixable = ["ALL"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

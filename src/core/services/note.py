@@ -61,7 +61,7 @@ class NoteService:
 
     async def delete_with_access_check(self, tg_id: int, note_id: int) -> None:
         if not await self.is_owner(tg_id, note_id):
-            return None
+            return
 
         await self.note_repo.delete(note_id)
 

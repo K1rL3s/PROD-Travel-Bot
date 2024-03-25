@@ -18,7 +18,7 @@ async def recommend_users_keyboard(
     travel_id: int,
     page: int,
     member_service: MemberService,
-):
+) -> InlineKeyboardMarkup:
     rows, width = 6, 1
     subjects = [
         InlineKeyboardButton(
@@ -37,7 +37,7 @@ async def recommend_users_keyboard(
 
     additional_buttons = [
         InlineKeyboardButton(
-            text=f"{TRAVEL} Путешествие",
+            text=f"{BACK}{TRAVEL} Путешествие",
             callback_data=GetTravelData(travel_id=travel_id).pack(),
         )
     ]

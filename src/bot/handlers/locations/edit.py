@@ -29,9 +29,9 @@ from core.utils.enums import LocationField
 from .phrases import (
     CITY_ERROR,
     COUNTRY_ERROR,
+    DATETIME_ERROR,
     EDIT_CITY_COUNTRY,
     EDIT_COUNTRY,
-    START_AT_ERROR,
     error_text_by_field,
 )
 
@@ -148,7 +148,7 @@ async def start_at_entered(
     start_at: str,
 ) -> None:
     if not validate_start_at(start_at):
-        text = START_AT_ERROR
+        text = DATETIME_ERROR
         keyboard = back_cancel_keyboard
     else:
         location.start_at = datetime_by_format(start_at)
@@ -200,7 +200,6 @@ async def edit_city_or_country(
 @flags.processing
 async def city_enter(
     message: Message,
-    bot: Bot,
     state: FSMContext,
     location: LocationExtended,
     geo_service: GeoService,
@@ -248,6 +247,14 @@ async def country_enter(
             city = await geo_service.create_or_get_city(city_title, country.title)
             location.country_id = country.id
             location.city_id = city.id
+
+            address = await geo_service.get_location_address(
+                location.title, city.title, country.title
+            )
+            if address:
+                location.latitude = address.latitude
+                location.longitude = address.longitude
+
             location = await location_service.update_with_access_check(
                 message.from_user.id,
                 location.id,

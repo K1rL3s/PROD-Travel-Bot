@@ -45,7 +45,7 @@ class UnknownUserMiddleware(BaseInfoMiddleware):
 
         event_chat: Chat | None = data.get("event_chat")
         if not event_chat:
-            return
+            return None
 
         await bot.send_message(
             chat_id=event_chat.id,

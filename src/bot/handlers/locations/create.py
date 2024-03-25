@@ -19,6 +19,7 @@ from core.services.location import (
     validate_address,
     validate_city,
     validate_country,
+    validate_end_at,
     validate_start_at,
     validate_title,
 )
@@ -27,12 +28,13 @@ from .phrases import (
     ADDRESS_ERROR,
     CITY_ERROR,
     COUNTRY_ERROR,
+    DATETIME_ERROR,
     FILL_ADDRESS,
     FILL_CITY,
     FILL_COUNTRY,
+    FILL_END_AT,
     FILL_START_AT,
     FILL_TITLE,
-    START_AT_ERROR,
     TITLE_ERROR,
 )
 
@@ -112,7 +114,7 @@ async def country_entered(
             text = FILL_ADDRESS
             await state.set_state(LocationCreating.address)
             await state.update_data(country=country)
-            address = await geo_service.get_address_location(
+            address = await geo_service.get_location_address(
                 data["title"],
                 data["city"],
                 country,
@@ -149,23 +151,41 @@ async def address_entered(
 
 
 @router.message(F.text.as_("start_at"), LocationCreating.start_at)
-@flags.processing
 async def start_at_entered(
+    message: Message,
+    state: FSMContext,
+    start_at: str,
+) -> None:
+    if validate_start_at(start_at):
+        text = FILL_END_AT
+        await state.set_state(LocationCreating.end_at)
+        await state.update_data(start_at=start_at)
+    else:
+        text = DATETIME_ERROR
+
+    await message.answer(text=text, reply_markup=cancel_keyboard)
+
+
+@router.message(F.text.as_("end_at"), LocationCreating.end_at)
+@flags.processing
+async def end_at_entered(
     message: Message,
     state: FSMContext,
     location_service: LocationService,
     geo_service: GeoService,
-    start_at: str,
+    end_at: str,
 ) -> None:
-    if not validate_start_at(start_at):
-        text = START_AT_ERROR
+    data = await state.get_data()
+    start_at = datetime_by_format(data["start_at"])
+
+    if not validate_end_at(end_at, start_at):
+        text = DATETIME_ERROR
         await message.answer(text=text, reply_markup=cancel_keyboard)
         return
 
-    data = await state.get_data()
     country = await geo_service.create_or_get_country(data["country"])
     city = await geo_service.create_or_get_city(data["city"], country.title)
-    address = await geo_service.get_address_location(
+    address = await geo_service.get_location_address(
         data["title"], city.title, country.title
     )
 
@@ -175,7 +195,8 @@ async def start_at_entered(
         city_id=city.id,
         country_id=country.id,
         address=html_quote(data["address"]),
-        start_at=datetime_by_format(start_at),
+        start_at=start_at,
+        end_at=datetime_by_format(end_at),
         latitude=address.latitude if address else city.latitude,
         longitude=address.longitude if address else city.longitude,
     )

@@ -42,7 +42,7 @@ async def locations_keyboard(
 
     additional_buttons = [
         InlineKeyboardButton(
-            text=f"{TRAVEL} Путешествие",
+            text=f"{BACK}{TRAVEL} Путешествие",
             callback_data=GetTravelData(travel_id=travel_id, page=page).pack(),
         )
     ]
@@ -142,7 +142,7 @@ def edit_location_keyboard(location_id: int, page: int):
             ),
         )
     builder.button(
-        text=f"{BACK} Локация",
+        text=f"{BACK}{LOCATION} Локация",
         callback_data=GetLocationData(location_id=location_id, page=page),
     )
     return builder.adjust(1, repeat=True).as_markup()
@@ -153,6 +153,15 @@ def delete_location_keyboard(location_id: int, page: int) -> InlineKeyboardMarku
         inline_keyboard=[
             [
                 InlineKeyboardButton(
+                    text=f"{BACK}{LOCATION} Локация",
+                    callback_data=GetLocationData(
+                        location_id=location_id,
+                        page=page,
+                    ).pack(),
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     text=f"{DELETE} Удалить",
                     callback_data=DeleteLocationData(
                         location_id=location_id,
@@ -161,21 +170,14 @@ def delete_location_keyboard(location_id: int, page: int) -> InlineKeyboardMarku
                     ).pack(),
                 )
             ],
-            [
-                InlineKeyboardButton(
-                    text=f"{BACK} Локация",
-                    callback_data=GetLocationData(
-                        location_id=location_id,
-                        page=page,
-                    ).pack(),
-                )
-            ],
         ]
     )
 
 
 def back_to_location_keyboard(
-    location_id: int, travel_id: int, page: int
+    location_id: int,
+    travel_id: int,
+    page: int,
 ) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[

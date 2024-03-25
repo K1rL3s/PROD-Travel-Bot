@@ -34,7 +34,12 @@ async def members_keyboard(
         for member in await member_service.list_with_access_check(tg_id, travel.id)
     ]
 
-    additional_buttons: list[InlineKeyboardButton] = []
+    additional_buttons = [
+        InlineKeyboardButton(
+            text=f"{BACK}{TRAVEL} Путешествие",
+            callback_data=GetTravelData(travel_id=travel.id).pack(),
+        )
+    ]
     if travel.owner_id == tg_id:
         additional_buttons.append(
             InlineKeyboardButton(
@@ -42,13 +47,6 @@ async def members_keyboard(
                 callback_data=AddMemberData(page=page, travel_id=travel.id).pack(),
             )
         )
-
-    additional_buttons.append(
-        InlineKeyboardButton(
-            text=f"{TRAVEL} Путешествие",
-            callback_data=GetTravelData(travel_id=travel.id).pack(),
-        )
-    )
 
     return paginate_keyboard(
         buttons=subjects,
@@ -105,22 +103,22 @@ def delete_member_keyboard(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
+                    text=f"{BACK} Назад",
+                    callback_data=GetMemberData(
+                        travel_id=travel_id,
+                        member_id=member_id,
+                        page=page,
+                    ).pack(),
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     text=f"{DELETE} Удалить",
                     callback_data=DeleteMemberData(
                         travel_id=travel_id,
                         member_id=member_id,
                         page=page,
                         sure=True,
-                    ).pack(),
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text=f"{BACK} Назад",
-                    callback_data=GetMemberData(
-                        travel_id=travel_id,
-                        member_id=member_id,
-                        page=page,
                     ).pack(),
                 )
             ],

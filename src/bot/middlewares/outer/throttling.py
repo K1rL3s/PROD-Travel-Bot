@@ -25,7 +25,7 @@ class ThrottlingMiddleware(BaseInfoMiddleware):
     ) -> Any:
         if (user := data.get("event_from_user")) is not None:
             if user.id in self.cache:
-                return
+                return None
 
             self.cache[user.id] = None
 

@@ -1,3 +1,4 @@
+import datetime as dt
 from typing import Callable, TypeVar
 
 from bot.utils.datehelp import datetime_by_format
@@ -94,6 +95,11 @@ def validate_start_at(start_at: str) -> bool:
     return bool(datetime_by_format(start_at))
 
 
+def validate_end_at(end_at: str, start_at: dt.datetime) -> bool:
+    end = datetime_by_format(end_at)
+    return end is not None and end >= start_at
+
+
 def get_location_field_validator(
     field: str,
 ) -> Callable[[str], bool]:
@@ -105,6 +111,4 @@ def get_location_field_validator(
         return validate_country
     if field == LocationField.ADDRESS:
         return validate_address
-    if field == LocationField.START_AT:
-        return validate_start_at
-    raise ValueError("Unknown field")
+    raise ValueError("Wrong field")

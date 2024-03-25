@@ -21,6 +21,7 @@ class LocationCreating(StatesGroup):
     country = State()
     address = State()
     start_at = State()
+    end_at = State()
 
 
 class ProfileState(StatesGroup):
