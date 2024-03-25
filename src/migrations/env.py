@@ -4,15 +4,12 @@ from logging.config import fileConfig
 
 from alembic import context
 from alembic.script import ScriptDirectory
-from dotenv import load_dotenv
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from database.models import *  # noqa: F403
 from database.models.base import AlchemyBaseModel
-
-load_dotenv()
 
 config = context.config
 
