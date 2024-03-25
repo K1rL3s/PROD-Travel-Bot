@@ -25,7 +25,7 @@ async def get_route(
         callback.from_user.id,
         callback_data.travel_id,
     )
-    if not locations:
+    if len(locations) < 1:
         text = NOT_ENOUGH_LOCATIONS
         keyboard = back_to_travel_keyboard(callback_data.travel_id, callback_data.page)
         await callback.message.answer(text=text, reply_markup=keyboard)

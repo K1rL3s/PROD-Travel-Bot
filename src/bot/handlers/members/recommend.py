@@ -7,7 +7,7 @@ from bot.callbacks import GetRecommendUser, RecommendPaginator
 from bot.callbacks.rec_user import AddRecommendUser
 from bot.filters import TravelCallbackOwner
 from bot.keyboards import one_recommend_user_keyboard, recommend_users_keyboard
-from bot.utils.format import format_invite_link, format_user
+from bot.utils.format import format_invite_link, format_member
 from core.models import InviteLinkExtended, Travel, User
 from core.services import MemberService, UserService
 
@@ -42,7 +42,7 @@ async def get_one_recommend_user(
     travel: Travel,
 ) -> None:
     member = await user_service.get(callback_data.user_id)
-    text = "👇 Вот, кого я нашёл для тебя\n\n" + format_user(member)
+    text = "👇 Вот, кого я нашёл для тебя\n\n" + format_member(member)
     keyboard = one_recommend_user_keyboard(
         member.id,
         travel.id,

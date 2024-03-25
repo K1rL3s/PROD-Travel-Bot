@@ -33,7 +33,7 @@ async def create_note(
     state: FSMContext,
 ) -> None:
     text = FILL_TITLE
-    await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
+    await callback.message.answer(text=text, reply_markup=cancel_keyboard)
     await state.set_state(NoteCreating.title)
     await state.set_data({"travel_id": callback_data.travel_id})
 

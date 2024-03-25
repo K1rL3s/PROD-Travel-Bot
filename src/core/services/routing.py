@@ -10,8 +10,7 @@ class RoutingService(BaseService):
         self.location_repo = location_repo
 
     async def get_route(self, travel: TravelExtended) -> tuple[str, bytes | None]:
-        locations = [travel.owner.city]
-        locations.extend(await self.location_repo.list_by_travel_id(travel.id))
+        locations = await self.location_repo.list_by_travel_id(travel.id)
         url = self.rounting.route_url(
             [(loc.latitude, loc.longitude) for loc in locations]
         )
