@@ -1,4 +1,4 @@
-from aiogram import Bot, F, Router
+from aiogram import Bot, F, Router, flags
 from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
@@ -26,7 +26,14 @@ from core.services.location import (
 )
 from core.utils.enums import LocationField
 
-from .phrases import CITY_ERROR, COUNTRY_ERROR, START_AT_ERROR, error_text_by_field
+from .phrases import (
+    CITY_ERROR,
+    COUNTRY_ERROR,
+    EDIT_CITY_COUNTRY,
+    EDIT_COUNTRY,
+    START_AT_ERROR,
+    error_text_by_field,
+)
 
 router = Router(name=__name__)
 
@@ -176,22 +183,12 @@ async def edit_city_or_country(
     state: FSMContext,
     location: LocationExtended,
 ) -> None:
-    text = (
-        "Так как не все города существуют во всех странах, "
-        "то вам надо ввести и город, и страну. "
-        "Начните с города, введите новое значение\n "
-        f"Текущее: {getattr(location, 'city')}"
-    )
-
+    text = EDIT_CITY_COUNTRY.format(value=location.city.title)
     await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
 
     await state.set_state(LocationState.editing_city)
     await state.set_data(
-        {
-            "last_id": callback.message.message_id,
-            "location_id": callback_data.location_id,
-            "page": callback_data.page,
-        },
+        {"location_id": callback_data.location_id, "page": callback_data.page},
     )
 
 
@@ -200,6 +197,7 @@ async def edit_city_or_country(
     LocationState.editing_city,
     LocationStateOwner(),
 )
+@flags.processing
 async def city_enter(
     message: Message,
     bot: Bot,
@@ -210,7 +208,7 @@ async def city_enter(
 ) -> None:
     city = validate_city(city) and await geo_service.normalize_city(city)
     if city:
-        text = f"Город есть, а из какой он страны?\nТекущая: {location.country}"
+        text = EDIT_COUNTRY.format(country=location.country.title)
         countries = await geo_service.get_countries_by_city(city)
         keyboard = reply_keyboard_from_list(countries)
         await state.set_state(LocationState.editing_country)
@@ -219,9 +217,7 @@ async def city_enter(
         text = CITY_ERROR
         keyboard = back_cancel_keyboard
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=keyboard)
 
 
 @router.message(
@@ -229,9 +225,9 @@ async def city_enter(
     LocationState.editing_country,
     LocationStateOwner(),
 )
+@flags.processing
 async def country_enter(
     message: Message,
-    bot: Bot,
     state: FSMContext,
     location: LocationExtended,
     location_service: LocationService,
@@ -244,7 +240,6 @@ async def country_enter(
         data = await state.get_data()
         city_title: str = data["city"]
         page: int = data["page"]
-        last_id: int = data["last_id"]
 
         country = await geo_service.normalize_country(country)
         countries = await geo_service.get_countries_by_city(city_title)
@@ -262,8 +257,5 @@ async def country_enter(
             text = format_location(location)
             keyboard = edit_location_keyboard(location.id, page)
             await state.clear()
-            await state.set_data({"last_id": last_id})
 
-    bot_msg = await message.answer(text=text, reply_markup=keyboard)
-    await delete_last_message(bot, state, message)
-    await state.update_data(last_id=bot_msg.message_id)
+    await message.answer(text=text, reply_markup=keyboard)

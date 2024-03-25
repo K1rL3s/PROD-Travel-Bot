@@ -1,4 +1,4 @@
-from aiogram import F, Router
+from aiogram import F, Router, flags
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
@@ -76,6 +76,7 @@ async def age_entered(
 
 
 @router.message(F.text.as_("city"), ProfileCreating.city)
+@flags.processing
 async def city_entered(
     message: Message,
     state: FSMContext,
@@ -97,6 +98,7 @@ async def city_entered(
 
 
 @router.message(F.text.as_("country_title"), ProfileCreating.country)
+@flags.processing
 async def country_entered(
     message: Message,
     state: FSMContext,

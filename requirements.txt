@@ -11,3 +11,8 @@ geopy==2.4.1
 structlog==24.1.0
 tzfpy==0.15.4
 pytz==2024.1
+
+staticmap==0.5.7
+requests==2.31.0
+flask==3.0.2
+waitress==3.0.0

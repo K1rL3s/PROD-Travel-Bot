@@ -9,9 +9,13 @@ class RoutingService(BaseService):
         self.rounting = rounting
         self.location_repo = location_repo
 
-    async def get_route_url(self, travel: TravelExtended) -> str:
+    async def get_route(self, travel: TravelExtended) -> tuple[str, bytes | None]:
         locations = [travel.owner.city]
         locations.extend(await self.location_repo.list_by_travel_id(travel.id))
-        return self.rounting.route_url(
+        url = self.rounting.route_url(
             [(loc.latitude, loc.longitude) for loc in locations]
         )
+        image = await self.rounting.route_image(
+            [(loc.longitude, loc.latitude) for loc in locations]
+        )
+        return url, image

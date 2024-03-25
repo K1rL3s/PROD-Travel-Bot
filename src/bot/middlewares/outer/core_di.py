@@ -28,7 +28,7 @@ from database.repositories import (
     UserAlchemyRepo,
 )
 from geo import GeoPyLocator, GraphHopperRouting, OpenWeather, TzfTimezoner
-from settings import APISettings
+from settings import Settings
 
 
 class ServiceDIMiddleware(BaseMiddleware):
@@ -37,10 +37,10 @@ class ServiceDIMiddleware(BaseMiddleware):
     def __init__(
         self,
         aiohttp_session: ClientSession,
-        api_settings: APISettings,
+        settings: Settings,
     ) -> None:
         self.aiohttp_session = aiohttp_session
-        self.api_settings = api_settings
+        self.settings = settings
 
     async def __call__(
         self,
@@ -60,9 +60,13 @@ class ServiceDIMiddleware(BaseMiddleware):
         city_repo = CityAlchemyRepo(session)
         geo_weather = OpenWeather(
             self.aiohttp_session,
-            self.api_settings.open_weather_key,
+            self.settings.api.open_weather_key,
         )
-        routing = GraphHopperRouting()
+        routing = GraphHopperRouting(
+            self.aiohttp_session,
+            self.settings.route.host,
+            self.settings.route.port,
+        )
         timezoner = TzfTimezoner()
 
         user_service = UserService(user_repo)

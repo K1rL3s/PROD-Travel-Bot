@@ -28,10 +28,18 @@ class BotSettings(BaseModel):
     token: str
 
 
+class RouteSettings(BaseModel):
+    """Настройки flask-сервиса."""
+
+    host: str
+    port: int
+
+
 class APISettings(BaseModel):
-    """Ключ к апишками."""
+    """Ключи к апишками."""
 
     open_weather_key: str
+    graphhopper_key: str
 
 
 class Settings(BaseModel):
@@ -41,6 +49,7 @@ class Settings(BaseModel):
     redis: RedisSettings
     bot: BotSettings
     api: APISettings
+    route: RouteSettings
 
 
 @lru_cache
@@ -65,6 +74,13 @@ def get_settings() -> Settings:
     bot = BotSettings(
         token=os.environ["BOT_TOKEN"],
     )
-    api = APISettings(open_weather_key=os.environ["OPEN_WEATHER_KEY"])
+    api = APISettings(
+        open_weather_key=os.environ["OPEN_WEATHER_KEY"],
+        graphhopper_key=os.environ["GRAPHHOPPER_KEY"],
+    )
+    route = RouteSettings(
+        host=os.environ["ROUTE_HOST"],
+        port=int(os.environ["ROUTE_PORT"]),
+    )
 
-    return Settings(db=db, redis=redis, bot=bot, api=api)
+    return Settings(db=db, redis=redis, bot=bot, api=api, route=route)

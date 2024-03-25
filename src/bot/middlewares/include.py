@@ -3,8 +3,9 @@ from aiohttp import ClientSession
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from structlog.typing import FilteringBoundLogger
 
-from settings import APISettings
+from settings import Settings
 
+from .inner.processing import ProcessingMiddleware
 from .outer.callback_answer import CallbackAnswerMiddleware
 from .outer.core_di import ServiceDIMiddleware
 from .outer.database import DBSessionMiddleware
@@ -18,7 +19,7 @@ from .request.retry import RetryRequestMiddleware
 def include_global_middlewares(
     bot: Bot,
     dp: Dispatcher,
-    api_settings: APISettings,
+    settings: Settings,
     aiohttp_session: ClientSession,
     session_maker: async_sessionmaker[AsyncSession],
     logger: FilteringBoundLogger,
@@ -33,7 +34,9 @@ def include_global_middlewares(
     dp.update.outer_middleware(ThrottlingMiddleware())
 
     dp.update.outer_middleware(DBSessionMiddleware(session_maker))
-    dp.update.outer_middleware(ServiceDIMiddleware(aiohttp_session, api_settings))
+    dp.update.outer_middleware(ServiceDIMiddleware(aiohttp_session, settings))
 
     dp.update.outer_middleware(UserContextMiddleware())
     dp.update.outer_middleware(UnknownUserMiddleware())  # !!
+
+    dp.message.middleware(ProcessingMiddleware())

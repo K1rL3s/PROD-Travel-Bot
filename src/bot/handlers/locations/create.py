@@ -1,4 +1,4 @@
-from aiogram import F, Router
+from aiogram import F, Router, flags
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
@@ -46,7 +46,7 @@ async def create_location(
     state: FSMContext,
 ) -> None:
     text = FILL_TITLE
-    await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
+    await callback.message.answer(text=text, reply_markup=cancel_keyboard)
 
     await state.set_state(LocationCreating.title)
     await state.set_data(
@@ -74,6 +74,7 @@ async def title_entered(
 
 
 @router.message(F.text.as_("city"), LocationCreating.city)
+@flags.processing
 async def city_entered(
     message: Message,
     state: FSMContext,
@@ -95,6 +96,7 @@ async def city_entered(
 
 
 @router.message(F.text.as_("country"), LocationCreating.country)
+@flags.processing
 async def country_entered(
     message: Message,
     state: FSMContext,
@@ -147,6 +149,7 @@ async def address_entered(
 
 
 @router.message(F.text.as_("start_at"), LocationCreating.start_at)
+@flags.processing
 async def start_at_entered(
     message: Message,
     state: FSMContext,

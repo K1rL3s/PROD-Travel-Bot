@@ -12,7 +12,6 @@ from bot.keyboards import back_cancel_keyboard, one_travel_keyboard, travels_key
 from bot.utils.enums import Action
 from bot.utils.format import format_travel
 from bot.utils.html import html_quote
-from bot.utils.tg import delete_last_message
 from core.models import Travel
 from core.services import TravelService, get_travel_field_validator
 from core.utils.enums import TravelField
@@ -51,7 +50,7 @@ class TravelCreateScene(BaseScene, state="travel"):
             return await self.wizard.exit()
 
         await state.update_data(step=step, last_id=callback.message.message_id)
-        await callback.message.edit_text(
+        await callback.message.answer(
             text=question.text,
             reply_markup=back_cancel_keyboard,
         )
@@ -60,7 +59,6 @@ class TravelCreateScene(BaseScene, state="travel"):
     async def on_message_enter(
         self,
         message: Message,
-        bot: Bot,
         state: FSMContext,
         step: int = 0,
     ) -> None:
@@ -69,12 +67,11 @@ class TravelCreateScene(BaseScene, state="travel"):
         except IndexError:
             return await self.wizard.exit()
 
-        bot_message = await message.answer(
+        await message.answer(
             text=question.text,
             reply_markup=back_cancel_keyboard,
         )
-        await delete_last_message(bot, state, message)
-        await state.update_data(step=step, last_id=bot_message.message_id)
+        await state.update_data(step=step)
 
     @on.message(F.text)
     async def answer(
@@ -97,7 +94,6 @@ class TravelCreateScene(BaseScene, state="travel"):
         )
         if error:
             await message.reply(text=error, reply_markup=back_cancel_keyboard)
-            await delete_last_message(bot, state, message)
             return
 
         answers[question.key] = message.text
@@ -110,7 +106,6 @@ class TravelCreateScene(BaseScene, state="travel"):
     async def on_message_exit(
         self,
         message: Message,
-        bot: Bot,
         state: FSMContext,
         travel_service: TravelService,
     ) -> None:
@@ -128,7 +123,6 @@ class TravelCreateScene(BaseScene, state="travel"):
             reply_markup=one_travel_keyboard(travel, message.from_user.id, page=0),
         )
 
-        await delete_last_message(bot, state, message)
         await state.set_data({})
 
     @on.callback_query(InStateData.filter(F.action == Action.CANCEL))
@@ -144,7 +138,7 @@ class TravelCreateScene(BaseScene, state="travel"):
     ) -> None:
         text = YOUR_TRAVELS
         keyboard = await travels_keyboard(callback.from_user.id, 0, travel_service)
-        await callback.message.edit_text(text=text, reply_markup=keyboard)
+        await callback.message.answer(text=text, reply_markup=keyboard)
         await state.set_data({})
 
     async def step_answer_check(

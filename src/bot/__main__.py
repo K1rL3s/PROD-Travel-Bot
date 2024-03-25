@@ -21,9 +21,7 @@ async def main() -> None:
     dp = create_dispatcher(settings, redis)
 
     async with aiohttp.ClientSession() as session:
-        include_global_middlewares(
-            bot, dp, settings.api, session, session_maker, logger
-        )
+        include_global_middlewares(bot, dp, settings, session, session_maker, logger)
 
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())

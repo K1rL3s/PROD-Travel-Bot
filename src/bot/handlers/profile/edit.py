@@ -1,4 +1,4 @@
-from aiogram import Bot, F, Router
+from aiogram import Bot, F, Router, flags
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
@@ -108,6 +108,7 @@ async def edit_profile_city_country(
     F.text.as_("city"),
     ProfileState.editing_city,
 )
+@flags.processing
 async def city_enter(
     message: Message,
     state: FSMContext,
@@ -133,6 +134,7 @@ async def city_enter(
     F.text.as_("country"),
     ProfileState.editing_country,
 )
+@flags.processing
 async def country_enter(
     message: Message,
     state: FSMContext,
