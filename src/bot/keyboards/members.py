@@ -109,9 +109,7 @@ def delete_member_keyboard(
                         member_id=member_id,
                         page=page,
                     ).pack(),
-                )
-            ],
-            [
+                ),
                 InlineKeyboardButton(
                     text=f"{DELETE} Удалить",
                     callback_data=DeleteMemberData(
@@ -120,7 +118,7 @@ def delete_member_keyboard(
                         page=page,
                         sure=True,
                     ).pack(),
-                )
+                ),
             ],
         ]
     )

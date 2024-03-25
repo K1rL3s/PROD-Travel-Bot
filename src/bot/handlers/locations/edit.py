@@ -12,7 +12,7 @@ from bot.keyboards import (
     reply_keyboard_from_list,
 )
 from bot.utils.datehelp import datetime_by_format
-from bot.utils.format import format_datetime, format_location
+from bot.utils.format import NO_DATA, format_datetime, format_location
 from bot.utils.html import html_quote
 from bot.utils.states import LocationState
 from bot.utils.tg import delete_last_message
@@ -254,6 +254,9 @@ async def country_enter(
             if address:
                 location.latitude = address.latitude
                 location.longitude = address.longitude
+                location.address = address.address
+            else:
+                location.address = NO_DATA
 
             location = await location_service.update_with_access_check(
                 message.from_user.id,

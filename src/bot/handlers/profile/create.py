@@ -9,6 +9,7 @@ from bot.keyboards import (
     reply_keyboard_from_list,
 )
 from bot.utils.enums import Action
+from bot.utils.format import NO_DATA
 from bot.utils.html import html_quote
 from bot.utils.states import ProfileCreating
 from core.models import User
@@ -126,7 +127,7 @@ async def country_entered(
                 age=int(data["age"]),
                 city_id=city.id,
                 country_id=country.id,
-                description=None,
+                description=NO_DATA,
             )
             await user_service.create(user)
             await state.clear()

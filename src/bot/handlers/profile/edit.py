@@ -99,7 +99,7 @@ async def edit_profile_city_country(
     state: FSMContext,
     user: UserExtended,
 ) -> None:
-    text = EDIT_CITY_COUNTRY.format(value=user.city)
+    text = EDIT_CITY_COUNTRY.format(value=user.city.title)
     await callback.message.edit_text(text=text, reply_markup=cancel_keyboard)
     await state.set_state(ProfileState.editing_city)
 
@@ -118,7 +118,7 @@ async def city_enter(
 ) -> None:
     city = validate_city(city) and await geo_service.normalize_city(city)
     if city:
-        text = EDIT_COUNTRY.format(county=user.country.title)
+        text = EDIT_COUNTRY.format(country=user.country.title)
         countries = await geo_service.get_countries_by_city(city)
         keyboard = reply_keyboard_from_list(countries)
         await state.set_state(ProfileState.editing_country)

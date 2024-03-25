@@ -5,8 +5,8 @@ from aiogram import Bot
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, Chat, Message, Update
 
-from bot.callbacks.profile import ProfileData
-from bot.keyboards.start import fill_profile_keyboard
+from bot.callbacks import ProfileData
+from bot.keyboards import fill_profile_keyboard
 from bot.middlewares.base import BaseInfoMiddleware
 from bot.utils.enums import SlashCommand
 from bot.utils.states import ProfileCreating

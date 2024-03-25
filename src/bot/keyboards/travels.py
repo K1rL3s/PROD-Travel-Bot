@@ -177,9 +177,7 @@ def delete_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
                         travel_id=travel_id,
                         page=page,
                     ).pack(),
-                )
-            ],
-            [
+                ),
                 InlineKeyboardButton(
                     text=f"{DELETE} Удалить",
                     callback_data=DeleteTravelData(
@@ -187,7 +185,7 @@ def delete_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
                         page=page,
                         sure=True,
                     ).pack(),
-                )
+                ),
             ],
         ]
     )
