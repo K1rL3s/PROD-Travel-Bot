@@ -20,7 +20,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 5s
 
   redis:
     image: redis:7.2.4-alpine3.19
@@ -49,7 +49,8 @@ services:
       POSTGRES_USER: prodbot
       POSTGRES_PASSWORD: prodbot
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   route:
     container_name: prod-bot-route
@@ -91,6 +92,7 @@ services:
       - database
       - migrations
       - redis
+      - route
 
 volumes:
   k1rles-travel-bot-volume:
