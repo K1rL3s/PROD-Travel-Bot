@@ -30,6 +30,7 @@ from .phrases import (
     FILL_CITY,
     FILL_COUNTRY,
     FILL_NAME,
+    LOCATION_ERROR,
     NAME_ERROR,
 )
 
@@ -131,5 +132,42 @@ async def country_entered(
             )
             await user_service.create(user)
             await state.clear()
+
+    await message.answer(text=text, reply_markup=keyboard)
+
+
+@router.message(F.location, ProfileCreating.city)
+@flags.processing
+async def location_entered(
+    message: Message,
+    state: FSMContext,
+    geo_service: GeoService,
+    user_service: UserService,
+) -> None:
+    reversed_geo = await geo_service.city_country_address_by_coords(
+        message.location.latitude,
+        message.location.longitude,
+    )
+    if reversed_geo:
+        text = ALL_RIGHT_BRO
+        keyboard = after_registration_keyboard
+        city, country, _ = reversed_geo
+
+        data = await state.get_data()
+        await state.clear()
+
+        user = User(
+            id=message.from_user.id,
+            tg_username=message.from_user.username,
+            name=html_quote(data["name"]),
+            age=int(data["age"]),
+            city_id=city.id,
+            country_id=country.id,
+            description=NO_DATA,
+        )
+        await user_service.create(user)
+    else:
+        text = LOCATION_ERROR
+        keyboard = cancel_keyboard
 
     await message.answer(text=text, reply_markup=keyboard)

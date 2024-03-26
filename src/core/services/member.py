@@ -41,6 +41,13 @@ class MemberService(BaseService):
 
         await self.member_repo.remove_from_travel(member_id, travel_id)
 
+    async def self_leave(
+        self,
+        tg_id: int,
+        travel_id: int,
+    ) -> None:
+        await self.member_repo.remove_from_travel(tg_id, travel_id)
+
     async def use_invite_link(
         self,
         tg_id: int,

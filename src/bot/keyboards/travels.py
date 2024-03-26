@@ -7,6 +7,7 @@ from bot.callbacks import (
     EditTravelData,
     GetRouteData,
     GetTravelData,
+    LeaveTravelData,
     LocationsPaginator,
     MembersPaginator,
     NotesPaginator,
@@ -19,6 +20,7 @@ from bot.keyboards.emoji import (
     DELETE,
     EDIT,
     GET,
+    GET_OUT,
     LOCATION,
     MEMBER,
     NOTE,
@@ -152,7 +154,18 @@ def one_travel_keyboard(
                 text=f"{GET} Найти путешественников",
                 callback_data=RecommendPaginator(
                     travel_id=travel.id,
-                    page=page or 0,
+                    page=page,
+                ).pack(),
+            ),
+        )
+    else:
+        builder.row(
+            InlineKeyboardButton(
+                text=f"{GET_OUT} Покинуть путешествие",
+                callback_data=LeaveTravelData(
+                    travel_id=travel.id,
+                    page=page,
+                    sure=False,
                 ).pack(),
             ),
         )
@@ -191,7 +204,7 @@ def delete_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
     )
 
 
-def edit_travel_keyboard(travel_id: int, page: int):
+def edit_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for field_name, field_data in (
         ("1️⃣ Название", TravelField.TITLE),
@@ -210,3 +223,27 @@ def edit_travel_keyboard(travel_id: int, page: int):
         callback_data=GetTravelData(travel_id=travel_id, page=page),
     )
     return builder.adjust(1, repeat=True).as_markup()
+
+
+def leave_travel_keyboard(travel_id: int, page: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=f"{BACK} Назад",
+                    callback_data=GetTravelData(
+                        travel_id=travel_id,
+                        page=page,
+                    ).pack(),
+                ),
+                InlineKeyboardButton(
+                    text=f"{GET_OUT} Покинуть",
+                    callback_data=LeaveTravelData(
+                        travel_id=travel_id,
+                        page=page,
+                        sure=True,
+                    ).pack(),
+                ),
+            ],
+        ]
+    )

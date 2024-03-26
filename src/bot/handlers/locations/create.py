@@ -35,6 +35,7 @@ from .phrases import (
     FILL_END_AT,
     FILL_START_AT,
     FILL_TITLE,
+    LOCATION_ERROR,
     TITLE_ERROR,
 )
 
@@ -210,3 +211,29 @@ async def end_at_entered(
     )
     await message.answer(text=text, reply_markup=keyboard)
     await state.clear()
+
+
+@router.message(F.location, LocationCreating.city)
+@flags.processing
+async def location_entered(
+    message: Message,
+    state: FSMContext,
+    geo_service: GeoService,
+) -> None:
+    reversed_geo = await geo_service.city_country_address_by_coords(
+        message.location.latitude,
+        message.location.longitude,
+    )
+    if reversed_geo:
+        city, country, address = reversed_geo
+        await state.update_data(
+            city=city.title,
+            country=country.title,
+            address=address.address,
+        )
+        await state.set_state(LocationCreating.start_at)
+        text = FILL_START_AT
+    else:
+        text = LOCATION_ERROR
+
+    await message.answer(text=text, reply_markup=cancel_keyboard)

@@ -22,7 +22,7 @@ async def delete_location(
     callback_data: DeleteLocationData,
     location: LocationExtended,
 ) -> None:
-    text = f'❗ Вы уверены, что хотите удалить локацию "{location.title}"?'
+    text = f'❓ Ты уверен, что хочешь удалить локацию "{location.title}"?'
     keyboard = delete_location_keyboard(callback_data.location_id, callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 

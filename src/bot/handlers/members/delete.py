@@ -25,7 +25,7 @@ async def delete_member(
     member: User,
 ) -> None:
     text = (
-        f'❗ Вы уверены, что хотите удалить участника "{member.name}" '
+        f'❓ Ты уверен, что хочешь удалить участника "{member.name}" '
         f'из путешествия "{travel.title}"?'
     )
     keyboard = delete_member_keyboard(

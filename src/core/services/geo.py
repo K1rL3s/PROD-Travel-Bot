@@ -36,6 +36,20 @@ class GeoService(BaseService):
             options = self.geo_kwargs
         return await self.geolocator.geocode(query, **options)
 
+    async def reverse(
+        self,
+        latitude: float,
+        longitude: float,
+        **kwargs: Any,
+    ) -> GeoLocation | None:
+        if kwargs:
+            options = self.geo_kwargs.copy()
+            options.update(kwargs)
+        else:
+            options = self.geo_kwargs
+        options.pop("extratags", None)
+        return await self.geolocator.reverse((latitude, longitude), **options)
+
     async def normalize_city(self, city: str) -> str | None:
         location = cast(
             GeoLocation,
@@ -57,7 +71,7 @@ class GeoService(BaseService):
         location = cast(
             GeoLocation,
             await self.geocode(
-                f"{city} {country}",
+                f"{country} {city}",
                 featuretype="city",
                 exactly_one=True,
             ),
@@ -122,3 +136,23 @@ class GeoService(BaseService):
         country: str,
     ) -> GeoLocation | None:
         return await self.geocode(f"{title} {city} {country}", exactly_one=True)
+
+    async def city_country_address_by_coords(
+        self,
+        latitude: float,
+        longitude: float,
+    ) -> tuple[City, Country, GeoLocation] | None:
+        location = cast(
+            GeoLocation, await self.reverse(latitude, longitude, exactly_one=True)
+        )
+        if location is None:
+            return None
+        if location.country_title is None:
+            return None
+        if location.local_title is None:
+            return None
+
+        country = await self.create_or_get_country(location.country_title)
+        city = await self.create_or_get_city(location.local_title, country.title)
+
+        return city, country, location if city and country and location else None

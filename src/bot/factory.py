@@ -40,8 +40,8 @@ async def set_commands(bot: Bot) -> bool:
     commands: dict[str, str] = {
         SlashCommand.START: "Старт",
         SlashCommand.HELP: "Помощь",
-        SlashCommand.TRAVELS: "Ваши путешествия",
-        SlashCommand.PROFILE: "Ваш профиль",
+        SlashCommand.TRAVELS: "Твои путешествия",
+        SlashCommand.PROFILE: "Твой профиль",
         SlashCommand.CANCEL: "Отмена ввода",
     }
 

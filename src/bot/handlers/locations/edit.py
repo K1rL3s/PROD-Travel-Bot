@@ -32,6 +32,7 @@ from .phrases import (
     DATETIME_ERROR,
     EDIT_CITY_COUNTRY,
     EDIT_COUNTRY,
+    LOCATION_ERROR,
     error_text_by_field,
 )
 
@@ -47,7 +48,7 @@ async def edit_location(
     callback_data: EditLocationData,
     location: LocationExtended,
 ) -> None:
-    text = "❓ Что вы хотите изменить?\n\n" + format_location(location)
+    text = "❓ Что ты хочешь изменить?\n\n" + format_location(location)
     keyboard = edit_location_keyboard(callback_data.location_id, callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -64,7 +65,7 @@ for field in (LocationField.TITLE, LocationField.ADDRESS):
         state: FSMContext,
         location: LocationExtended,
     ) -> None:
-        text = "Введите новое значение.\nТекущее: " + str(
+        text = "Введи новое значение.\nТекущее: " + str(
             getattr(location, callback_data.field)
         )
         await callback.message.edit_text(text=text, reply_markup=back_cancel_keyboard)
@@ -120,7 +121,7 @@ async def edit_start_at(
     state: FSMContext,
     location: LocationExtended,
 ) -> None:
-    text = "Введите новое значение.\nТекущее: " + format_datetime(location.start_at)
+    text = "Введи новое значение.\nТекущее: " + format_datetime(location.start_at)
     await callback.message.edit_text(text=text, reply_markup=back_cancel_keyboard)
 
     await state.set_state(LocationState.editing_start_at)
@@ -267,5 +268,40 @@ async def country_enter(
             text = format_location(location)
             keyboard = edit_location_keyboard(location.id, page)
             await state.clear()
+
+    await message.answer(text=text, reply_markup=keyboard)
+
+
+@router.message(F.location, LocationState.editing_city, LocationStateOwner())
+@flags.processing
+async def location_entered(
+    message: Message,
+    state: FSMContext,
+    geo_service: GeoService,
+    location_service: LocationService,
+    location: LocationExtended,
+) -> None:
+    reversed_geo = await geo_service.city_country_address_by_coords(
+        message.location.latitude,
+        message.location.longitude,
+    )
+    if reversed_geo:
+        city, country, address = reversed_geo
+        location.city_id = city.id
+        location.country_id = country.id
+        location.address = address.address
+        location = await location_service.update_with_access_check(
+            message.from_user.id, location.id, location
+        )
+
+        data = await state.get_data()
+        page: int = data["page"]
+        await state.clear()
+
+        text = format_location(location)
+        keyboard = edit_location_keyboard(location.id, page)
+    else:
+        text = LOCATION_ERROR
+        keyboard = cancel_keyboard
 
     await message.answer(text=text, reply_markup=keyboard)

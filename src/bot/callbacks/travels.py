@@ -25,3 +25,9 @@ class DeleteTravelData(CallbackData, prefix="delete_travel"):
 class GetRouteData(CallbackData, prefix="get_router"):
     travel_id: int
     page: int = 0
+
+
+class LeaveTravelData(CallbackData, prefix="leave_travel"):
+    travel_id: int
+    page: int = 0
+    sure: bool = False

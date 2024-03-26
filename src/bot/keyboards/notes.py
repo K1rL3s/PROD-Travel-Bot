@@ -17,8 +17,8 @@ from bot.utils.enums import BotMenu
 from core.models import Note, Travel
 from core.services import NoteService
 
-PUBLIC = "👨‍👩‍👦"
-PRIVATE = "🤫"
+PUBLIC = "👨‍👩‍"
+PRIVATE = "🔒"
 
 
 choose_status_keyboard = InlineKeyboardMarkup(

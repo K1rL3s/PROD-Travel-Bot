@@ -24,6 +24,7 @@ from .phrases import (
     COUNTRY_ERROR,
     EDIT_CITY_COUNTRY,
     EDIT_COUNTRY,
+    LOCATION_ERROR,
     error_text_by_field,
 )
 
@@ -36,7 +37,7 @@ router = Router(name=__name__)
     ProfileState.editing,
 )
 async def edit_profile(callback: CallbackQuery, user: UserExtended) -> None:
-    text = "❓ Что вы хотите изменить?\n\n" + format_user(user)
+    text = "❓ Что ты хочешь изменить?\n\n" + format_user(user)
     keyboard = edit_profile_fields_keyboard
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -161,5 +162,34 @@ async def country_enter(
             text = format_user(user)
             keyboard = edit_profile_fields_keyboard
             await state.clear()
+
+    await message.answer(text=text, reply_markup=keyboard)
+
+
+@router.message(F.location, ProfileState.editing_city)
+@flags.processing
+async def location_entered(
+    message: Message,
+    state: FSMContext,
+    user: UserExtended,
+    geo_service: GeoService,
+    user_service: UserService,
+) -> None:
+    reversed_geo = await geo_service.city_country_address_by_coords(
+        message.location.latitude,
+        message.location.longitude,
+    )
+    if reversed_geo:
+        city, country, _ = reversed_geo
+        user.country_id = country.id
+        user.city_id = city.id
+        user = await user_service.update(user.id, user)
+        await state.clear()
+
+        text = format_user(user)
+        keyboard = edit_profile_fields_keyboard
+    else:
+        text = LOCATION_ERROR
+        keyboard = cancel_keyboard
 
     await message.answer(text=text, reply_markup=keyboard)

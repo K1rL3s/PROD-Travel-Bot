@@ -27,7 +27,7 @@ async def edit_travel(
     callback_data: GetTravelData,
     travel: TravelExtended,
 ) -> None:
-    text = "Что вы хотите изменить?\n\n" + format_travel(travel)
+    text = "❓ Что ты хочешь изменить?\n\n" + format_travel(travel)
     keyboard = edit_travel_keyboard(callback_data.travel_id, callback_data.page)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 

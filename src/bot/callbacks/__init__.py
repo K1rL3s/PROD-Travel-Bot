@@ -26,6 +26,7 @@ from .travels import (
     EditTravelData,
     GetRouteData,
     GetTravelData,
+    LeaveTravelData,
 )
 
 __all__ = (
@@ -58,4 +59,5 @@ __all__ = (
     "AddRecommendUser",
     "GetRouteData",
     "GetWeatherData",
+    "LeaveTravelData",
 )

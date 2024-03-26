@@ -1,10 +1,11 @@
-from sqlalchemy import ScalarSelect, delete, or_, select
+import sqlalchemy as sa
 
 from core.models import User, UserExtended
 from core.repositories.member import MemberRepo
 from database.models import (
     CityModel,
     LocationModel,
+    NoteModel,
     TravelModel,
     UserModel,
     UsersToTravels,
@@ -22,10 +23,10 @@ class MemberAlchemyRepo(MemberRepo, BaseAlchemyRepo):
         offset: int = 0,
     ) -> list[User]:
         query = (
-            select(UserModel)
+            sa.select(UserModel)
             .where(
                 UserModel.id.in_(
-                    select(UsersToTravels.member_id).where(
+                    sa.select(UsersToTravels.member_id).where(
                         UsersToTravels.travel_id == travel_id
                     )
                 )
@@ -45,11 +46,16 @@ class MemberAlchemyRepo(MemberRepo, BaseAlchemyRepo):
         await self.session.commit()
 
     async def remove_from_travel(self, member_id: int, travel_id: int) -> None:
-        query = delete(UsersToTravels).where(
-            UsersToTravels.member_id == member_id,  # но он работает .-.
+        notes_query = sa.delete(NoteModel).where(
+            NoteModel.creator_id == member_id,
+            NoteModel.travel_id == travel_id,
+        )
+        relation_query = sa.delete(UsersToTravels).where(
+            UsersToTravels.member_id == member_id,
             UsersToTravels.travel_id == travel_id,
         )
-        await self.session.execute(query)
+        await self.session.execute(notes_query)
+        await self.session.execute(relation_query)
         await self.session.commit()
 
     async def recommended_travelers(
@@ -58,12 +64,12 @@ class MemberAlchemyRepo(MemberRepo, BaseAlchemyRepo):
         limit: int | None = None,
         offset: int = 0,
     ) -> list[UserExtended]:
-        def owner_query_field(field: str) -> ScalarSelect:
+        def owner_query_field(field: str) -> sa.ScalarSelect:
             return (
-                select(getattr(UserModel, field))
+                sa.select(getattr(UserModel, field))
                 .where(
                     UserModel.id
-                    == select(TravelModel.owner_id)
+                    == sa.select(TravelModel.owner_id)
                     .where(TravelModel.id == travel_id)
                     .scalar_subquery()
                 )
@@ -75,16 +81,16 @@ class MemberAlchemyRepo(MemberRepo, BaseAlchemyRepo):
             owner_query_field("age") + RECOMMENDED_TRAVELER_AGE_DIFFERENCE,
         )
         not_in_travel = UserModel.id.notin_(
-            select(UsersToTravels.member_id).where(
+            sa.select(UsersToTravels.member_id).where(
                 UsersToTravels.travel_id == travel_id
             )
         )
-        in_owner_city_or_in_locations_city = or_(
+        in_owner_city_or_in_locations_city = sa.or_(
             UserModel.city_id == owner_query_field("city_id"),
             UserModel.city_id.in_(
-                select(CityModel.id).where(
+                sa.select(CityModel.id).where(
                     CityModel.id.in_(
-                        select(LocationModel.city_id).where(
+                        sa.select(LocationModel.city_id).where(
                             LocationModel.travel_id == travel_id
                         )
                     )
@@ -93,7 +99,7 @@ class MemberAlchemyRepo(MemberRepo, BaseAlchemyRepo):
         )
 
         query = (
-            select(UserModel)
+            sa.select(UserModel)
             .where(age_difference, not_in_travel, in_owner_city_or_in_locations_city)
             .order_by(UserModel.name)
             .offset(offset)

@@ -1,5 +1,5 @@
-from .geo import GeoLocator
 from .location import GeoLocation
+from .locator import GeoLocator
 from .point import GeoPoint
 from .routing import Routing
 from .timezone import Timezoner
