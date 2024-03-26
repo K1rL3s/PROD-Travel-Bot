@@ -7,7 +7,7 @@ services:
     container_name: prod-bot-database
     restart: unless-stopped
     volumes:
-      - "k1rles-travel-bot-volume:/var/lib/postgresql/data"
+      - "/var/prod/k1rles-bot/db:/var/lib/postgresql/data"
     ports:
       - "5678:5432"
     environment:
@@ -27,7 +27,7 @@ services:
     container_name: prod-bot-redis
     restart: unless-stopped
     volumes:
-      - "k1rles-travel-bot-volume:/data"
+      - "/var/prod/k1rles-bot/redis:/data"
     ports:
       - "8765:6379"
     healthcheck:
@@ -70,8 +70,6 @@ services:
     build:
       context: .
       dockerfile: ./src/bot/Dockerfile
-    volumes:
-      - "k1rles-travel-bot-volume:/app/logs"
     environment:
       PYTHONUNBUFFERED: 1
       PYTHONDONTWRITEBYTECODE: 1
@@ -93,6 +91,3 @@ services:
       - migrations
       - redis
       - route
-
-volumes:
-  k1rles-travel-bot-volume:
