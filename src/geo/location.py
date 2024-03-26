@@ -9,7 +9,14 @@ class GeoPyLocation(_Location, GeoLocation):
 
     @property
     def local_title(self) -> str | None:
-        return self.raw.get("address", {}).get(self.raw.get("addresstype"))
+        address = self.raw.get("address", {})
+        return (
+            address.get(self.raw.get("addresstype"))
+            or address.get("city")
+            or address.get("municipality")
+            or address.get("town")
+            or address.get("village")
+        )
 
     @property
     def country_title(self) -> str | None:
